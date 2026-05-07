@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { AnimatePresence, motion } from 'motion/react';
 import Navbar from './components/Navbar';
 import FloatingCursor from './components/FloatingCursor';
-import AIAssistant from './components/AIAssistant';
 import Home from './pages/Home';
 import Theme from './pages/Theme';
 import SpeakersPage from './pages/Speakers';
@@ -40,7 +39,6 @@ export default function App() {
     <Router>
       <div className="relative selection:bg-brand-secondary selection:text-white min-h-screen flex flex-col">
         <FloatingCursor />
-        <AIAssistant />
         <ScrollToTop />
         <Navbar />
         <main className="flex-grow">

@@ -101,12 +101,6 @@ app.get('/api/schedule', (req, res) => {
   res.json(schedule);
 });
 
-app.post('/api/time-capsule', (req, res) => {
-  const { message, category } = req.body;
-  console.log(`TIME CAPSULE ENTRY [${category}]: ${message}`);
-  res.json({ success: true, message: "Your message has been frozen in time." });
-});
-
 // Example registration/contact endpoint
 app.post('/api/register', async (req, res) => {
   const { email, name, message } = req.body;
@@ -147,7 +141,7 @@ app.post('/api/register', async (req, res) => {
 });
 
 // Vite middleware for development
-async function setupVite() {
+const setupVite = async (app: any) => {
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -157,22 +151,27 @@ async function setupVite() {
   } else {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
-    app.get('*', (req, res) => {
+    // SPA Fallback
+    app.get('*', (req: any, res: any) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
-}
+};
 
-// Only listen if not in a Vercel environment
+// In local dev, we start the server manually
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-  setupVite().then(() => {
+  setupVite(app).then(() => {
     app.listen(PORT, '0.0.0.0', () => {
-      console.log(`Server running on http://localhost:${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+      console.log(`Server running on http://localhost:${PORT}`);
     });
   });
 } else {
-  // In production (Vercel), we just export the app
-  setupVite();
+  // On Vercel, the dist folder is already built
+  const distPath = path.join(process.cwd(), 'dist');
+  app.use(express.static(distPath));
+  app.get('*', (req: any, res: any) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
 }
 
 export default app;
