@@ -1,8 +1,6 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createServer as createViteServer } from 'vite';
-import { Resend } from 'resend';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,7 +16,6 @@ app.get('/api/health', (req, res) => {
 });
 
 app.get('/api/speakers', (req, res) => {
-  // In a real app, this would come from a database like Firebase
   const speakers = [
     { id: '1', name: 'Anaya Rashid', topic: 'The Culture of Time', segmentId: 'past' },
     { id: '2', name: 'Zahra Datoo', topic: 'The Architecture of Nostalgia', segmentId: 'past' },
@@ -84,7 +81,6 @@ app.get('/api/tickets', (req, res) => {
 app.post('/api/subscribe', (req, res) => {
   const { email } = req.body;
   console.log(`NEW SUBSCRIPTION: ${email}`);
-  // In real app, save to DB or Mailchimp
   res.json({ success: true, message: "Welcome to the inner circle." });
 });
 
@@ -101,23 +97,17 @@ app.get('/api/schedule', (req, res) => {
   res.json(schedule);
 });
 
-// Example registration/contact endpoint
 app.post('/api/register', async (req, res) => {
   const { email, name, message } = req.body;
-  console.log('--- NEW GET INVOLVED REQUEST ---');
-  console.log(`Name: ${name}`);
-  console.log(`Email: ${email}`);
-  if (message) console.log(`Message: ${message}`);
-  console.log('--------------------------------');
-
   const resendKey = process.env.RESEND_API_KEY;
   
   if (resendKey) {
     try {
+      const { Resend } = await import('resend');
       const resend = new Resend(resendKey);
       await resend.emails.send({
         from: 'TEDx Youth <onboarding@resend.dev>',
-        to: ['jabari2breezy@gmail.com'], // The user's email from metadata
+        to: ['jabari2breezy@gmail.com'],
         subject: `New Get Involved Request: ${name}`,
         html: `
           <h1>New Interest for TEDxAlMuntazirSchoolsYouth 2026</h1>
@@ -126,12 +116,9 @@ app.post('/api/register', async (req, res) => {
           <p><strong>Message:</strong> ${message || 'No message provided'}</p>
         `
       });
-      console.log('Email sent successfully via Resend');
     } catch (error) {
-      console.error('Error sending email via Resend:', error);
+      console.error('Error sending email:', error);
     }
-  } else {
-    console.log('Skipping email sending: RESEND_API_KEY not found in environment');
   }
   
   res.json({ 
@@ -140,37 +127,23 @@ app.post('/api/register', async (req, res) => {
   });
 });
 
-// Vite middleware for development
 const setupVite = async (app: any) => {
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
     });
     app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    // SPA Fallback
-    app.get('*', (req: any, res: any) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
   }
 };
 
-// In local dev, we start the server manually
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+// Start logic for local dev
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   setupVite(app).then(() => {
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server running on http://localhost:${PORT}`);
     });
-  });
-} else {
-  // On Vercel, the dist folder is already built
-  const distPath = path.join(process.cwd(), 'dist');
-  app.use(express.static(distPath));
-  app.get('*', (req: any, res: any) => {
-    res.sendFile(path.join(distPath, 'index.html'));
   });
 }
 
