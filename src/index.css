@@ -1,0 +1,80 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Ballet:opsz@16..72&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Inter:wght@100..900&display=swap');
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
+  --font-mono: "Courier Prime", monospace;
+  --font-title: "Bricolage Grotesque", sans-serif;
+  --font-accent: "Ballet", cursive;
+
+  --color-brand-primary: #002B5B; /* Deep Blue from school logo */
+  --color-brand-secondary: #00A859; /* Vibrant Green from school logo */
+  --color-brand-background: #ffffff;
+  --color-brand-surface: #f8fafc;
+  --color-brand-outline: rgba(0, 43, 91, 0.1);
+}
+
+@layer base {
+  body {
+    @apply bg-brand-background text-brand-primary selection:bg-brand-secondary selection:text-white overflow-x-hidden antialiased;
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3 {
+    @apply tracking-tighter uppercase;
+    font-family: var(--font-title);
+  }
+}
+
+.text-stroke {
+  -webkit-text-stroke: 1px rgba(0, 43, 91, 0.3);
+  color: transparent;
+}
+
+.brutalist-button {
+  @apply px-10 py-4 font-bold uppercase tracking-[0.3em] text-[9px] bg-transparent text-white border border-white/20 hover:border-brand-secondary hover:bg-brand-secondary transition-all duration-500 rounded-full flex items-center justify-center;
+}
+
+/* Oryzo-style Typography Utilities */
+.font-editorial { font-family: var(--font-serif); }
+.font-kinetic { font-family: var(--font-title); }
+.font-typewriter { font-family: var(--font-mono); }
+.font-handwriting { font-family: var(--font-accent); }
+
+/* Liquid Shadows & Gradients */
+.glass-panel {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10;
+}
+
+.liquid-bg {
+  background: radial-gradient(circle at 50% -20%, #006d3844 0%, transparent 50%),
+              radial-gradient(circle at 0% 100%, #00083944 0%, transparent 50%);
+}
+
+/* Animations */
+.char-reveal {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+}
+
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee-content {
+  display: inline-block;
+  animation: marquee 60s linear infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Custom Cursor Refinement */
+.custom-cursor {
+  mix-blend-mode: difference;
+}
