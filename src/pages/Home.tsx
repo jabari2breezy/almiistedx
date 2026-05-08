@@ -214,6 +214,12 @@ export default function Home() {
   }, []);
 
 
+  const hapticFeedback = () => {
+    if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
+      window.navigator.vibrate(10);
+    }
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -310,7 +316,11 @@ export default function Home() {
                   <span className="font-title uppercase font-black text-brand-secondary">Assembly is Live</span>
                 </div>
               ) : (
-                <Link to="/speakers" className="brutalist-button w-full group !bg-brand-secondary !text-white border-transparent">
+                <Link 
+                  to="/speakers" 
+                  onClick={hapticFeedback}
+                  className="brutalist-button w-full group !bg-brand-secondary !text-white border-transparent"
+                >
                   <span className="flex items-center gap-6">
                     MEET THE SPEAKERS <ArrowUpRight size={18} className="group-hover:rotate-45 transition-transform duration-500" />
                   </span>
@@ -322,34 +332,47 @@ export default function Home() {
       </div>
 
       {/* Latest Updates Section */}
-      <section className="px-6 md:px-16 py-20 border-t border-brand-outline bg-brand-surface/50">
+      <section className="px-6 md:px-16 py-20 border-t border-brand-outline bg-brand-surface/50 overflow-hidden">
         <div className="max-w-screen-2xl mx-auto">
-          <div className="flex items-center gap-4 mb-12">
-            <Zap size={20} className="text-brand-secondary" />
-            <h3 className="font-typewriter text-[10px] uppercase tracking-[0.5em] text-brand-primary/40">Latest Updates</h3>
+          <div className="flex items-center justify-between mb-12">
+            <div className="flex items-center gap-4">
+              <Zap size={20} className="text-brand-secondary" />
+              <h3 className="font-typewriter text-[10px] uppercase tracking-[0.5em] text-brand-primary/40">Latest Updates</h3>
+            </div>
+            <div className="md:hidden font-typewriter text-[8px] uppercase tracking-widest text-brand-secondary border border-brand-secondary/30 px-3 py-1 rounded-full animate-pulse">
+              Swipe to explore
+            </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <motion.div 
+            drag="x"
+            dragConstraints={{ left: -600, right: 0 }}
+            dragElastic={0.2}
+            className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 min-w-max md:min-w-0"
+          >
             {updates.length === 0 ? (
-                [1,2,3].map(i => <div key={i} className="h-40 bg-brand-outline/20 rounded-3xl animate-pulse" />)
+                [1,2,3].map(i => <div key={i} className="w-[80vw] md:w-full h-40 bg-brand-outline/20 rounded-3xl animate-pulse" />)
             ) : (
               updates.map((update, idx) => (
-                <TiltCard key={update.id}>
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="bg-white p-8 rounded-3xl border border-brand-outline hover:border-brand-secondary/30 transition-colors h-full"
-                  >
-                    <span className="text-[10px] font-typewriter text-brand-secondary mb-4 block uppercase tracking-widest">{update.date}</span>
-                    <h4 className="font-title text-xl text-brand-primary mb-2 uppercase">{update.title}</h4>
-                    <p className="font-editorial text-lg text-brand-primary/60 italic leading-tight">{update.content}</p>
-                  </motion.div>
-                </TiltCard>
+                <div key={update.id} className="w-[85vw] md:w-full h-full flex-shrink-0">
+                  <TiltCard>
+                    <motion.div 
+                      onPointerDown={hapticFeedback}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="bg-white p-8 rounded-3xl border border-brand-outline hover:border-brand-secondary/30 transition-colors h-full shadow-sm"
+                    >
+                      <span className="text-[10px] font-typewriter text-brand-secondary mb-4 block uppercase tracking-widest">{update.date}</span>
+                      <h4 className="font-title text-xl text-brand-primary mb-3 uppercase">{update.title}</h4>
+                      <p className="font-editorial text-lg text-brand-primary/60 italic leading-tight">{update.content}</p>
+                    </motion.div>
+                  </TiltCard>
+                </div>
               ))
             )}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -377,7 +400,7 @@ export default function Home() {
             </p>
           </motion.div>
           
-          <div className="space-y-12">
+          <div className="flex md:flex-col overflow-x-auto md:overflow-visible pb-8 md:pb-0 gap-8 min-w-max md:min-w-0 md:space-y-12 no-scrollbar">
             {[
               { 
                 title: 'Preserving the Past', 
@@ -395,22 +418,25 @@ export default function Home() {
                 text: 'The worlds we will never inhabit. Defining our responsibility for the generations to come.' 
               }
             ].map((item, i) => (
-              <TiltCard key={item.title}>
-                <motion.div 
-                  className="p-10 border border-brand-outline rounded-3xl hover:border-brand-secondary transition-all group bg-white/80 backdrop-blur-sm shadow-sm"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                >
-                  <div className="flex justify-between items-start mb-6">
-                    <span className="font-typewriter text-[10px] text-brand-secondary uppercase tracking-[0.4em]">Unit_0{i+1}</span>
-                    <span className="font-editorial text-sm italic text-brand-primary/30 uppercase">{item.sub}</span>
-                  </div>
-                  <h4 className="font-title text-3xl uppercase text-brand-primary mb-4">{item.title}</h4>
-                  <p className="font-editorial text-xl text-brand-primary/60 italic leading-tight group-hover:text-brand-primary transition-colors">{item.text}</p>
-                </motion.div>
-              </TiltCard>
+              <div key={item.title} className="w-[85vw] md:w-full flex-shrink-0">
+                <TiltCard>
+                  <motion.div 
+                    onClick={hapticFeedback}
+                    className="p-10 border border-brand-outline rounded-3xl hover:border-brand-secondary transition-all group bg-white/80 backdrop-blur-sm shadow-sm"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                  >
+                    <div className="flex justify-between items-start mb-6">
+                      <span className="font-typewriter text-[10px] text-brand-secondary uppercase tracking-[0.4em]">Unit_0{i+1}</span>
+                      <span className="font-editorial text-sm italic text-brand-primary/30 uppercase">{item.sub}</span>
+                    </div>
+                    <h4 className="font-title text-3xl uppercase text-brand-primary mb-4">{item.title}</h4>
+                    <p className="font-editorial text-xl text-brand-primary/60 italic leading-tight group-hover:text-brand-primary transition-colors">{item.text}</p>
+                  </motion.div>
+                </TiltCard>
+              </div>
             ))}
           </div>
         </div>

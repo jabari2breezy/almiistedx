@@ -93,48 +93,60 @@ app.post('/api/register', async (req, res) => {
       const resend = new Resend(resendKey);
       // Send notification to Admin
       console.log('Attempting to send admin email via Resend...');
-      const adminEmail = await resend.emails.send({
-        from: 'onboarding@resend.dev',
-        to: ['jabari2breezy@gmail.com'],
-        subject: `New Get Involved Request: ${name}`,
-        html: `
-          <div style="font-family: sans-serif; line-height: 1.5; color: #002B5B;">
-            <h1 style="border-bottom: 2px solid #00A859; padding-bottom: 10px;">New Interest for TEDxAlMuntazirSchoolsYouth 2026</h1>
-            <p><strong>Name:</strong> ${name}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Message:</strong> ${message || 'No message provided'}</p>
-          </div>
-        `
-      });
-      console.log('Admin notification response:', adminEmail);
-
-      if (adminEmail.error) {
-        console.error('Resend Admin Email Error:', adminEmail.error);
+      try {
+        const adminEmail = await resend.emails.send({
+          from: 'TEDx Youth <onboarding@resend.dev>',
+          to: ['jabari2breezy@gmail.com'],
+          subject: `New Get Involved Request: ${name}`,
+          html: `
+            <div style="font-family: sans-serif; line-height: 1.5; color: #002B5B;">
+              <h1 style="border-bottom: 2px solid #00A859; padding-bottom: 10px;">New Interest for TEDxAlMuntazirSchoolsYouth 2026</h1>
+              <p><strong>Name:</strong> ${name}</p>
+              <p><strong>Email:</strong> ${email}</p>
+              <p><strong>Message:</strong> ${message || 'No message provided'}</p>
+            </div>
+          `
+        });
+        console.log('Admin notification response:', adminEmail);
+        if (adminEmail.error) {
+          console.error('Resend Admin Email Error:', JSON.stringify(adminEmail.error, null, 2));
+        }
+      } catch (err: any) {
+        console.error('Admin email failed:', err.message || err);
       }
 
       // Send thank you email to User
-      console.log('Attempting to send user thank you email via Resend to:', email);
-      const userEmail = await resend.emails.send({
-        from: 'onboarding@resend.dev',
-        to: [email],
-        subject: `Thank you for your interest, ${name}!`,
-        html: `
-          <div style="font-family: sans-serif; line-height: 1.6; color: #002B5B; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 24px; padding: 40px;">
-            <h1 style="font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; margin-bottom: 24px;">Borrowed Time / <span style="color: #00A859;">TEDx</span></h1>
-            <p>Hello ${name},</p>
-            <p>Thank you for reaching out to us. We've received your message and we're thrilled to see your interest in <strong>TEDxAlMuntazirSchoolsYouth 2026</strong>.</p>
-            <p>Our theme this year is <em>"Borrowed Time"</em>, and we are working hard to curate an assembly that challenges the way we perceive and spend the moments we have. The fact that you want to be a part of this conversation means a lot to us.</p>
-            <p>Our curation and logistics teams will review your request and get back to you as soon as possible.</p>
-            <p style="margin-top: 40px; font-size: 14px; color: #002B5B; opacity: 0.6;">Stay tuned for more updates.</p>
-            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-            <p style="font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em; color: #00A859;">TEDxAlMuntazirSchoolsYouth Team</p>
-          </div>
-        `
-      });
-      console.log('User notification response:', userEmail);
-      
-      if (userEmail.error) {
-        console.error('Resend User Email Error:', userEmail.error);
+      // NOTE: Resend's onboarding@resend.dev only allows sending to the account owner (you).
+      // If the email is not yours, this WILL fail with a validation_error until you verify a domain.
+      if (email.toLowerCase() === 'jabari2breezy@gmail.com' || process.env.NODE_ENV === 'production') {
+        console.log('Attempting to send user thank you email via Resend to:', email);
+        try {
+          const userEmail = await resend.emails.send({
+            from: 'TEDxAlMuntazir <onboarding@resend.dev>',
+            to: [email],
+            subject: `Thank you for your interest, ${name}!`,
+            html: `
+              <div style="font-family: sans-serif; line-height: 1.6; color: #002B5B; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 24px; padding: 40px;">
+                <h1 style="font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; margin-bottom: 24px;">Borrowed Time / <span style="color: #00A859;">TEDx</span></h1>
+                <p>Hello ${name},</p>
+                <p>Thank you for reaching out to us. We've received your message and we're thrilled to see your interest in <strong>TEDxAlMuntazirSchoolsYouth 2026</strong>.</p>
+                <p>Our theme this year is <em>"Borrowed Time"</em>, and we are working hard to curate an assembly that challenges the way we perceive and spend the moments we have.</p>
+                <p>Our curation and logistics teams will review your request and get back to you as soon as possible.</p>
+                <p style="margin-top: 40px; font-size: 14px; color: #002B5B; opacity: 0.6;">Stay tuned for more updates.</p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+                <p style="font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em; color: #00A859;">TEDxAlMuntazirSchoolsYouth Team</p>
+              </div>
+            `
+          });
+          console.log('User notification response:', userEmail);
+          if (userEmail.error) {
+            console.warn('Resend User Email Error (Likely due to unverified domain):', JSON.stringify(userEmail.error, null, 2));
+          }
+        } catch (err: any) {
+          console.warn('User thank you email failed (Likely due to Resend restrictions):', err.message || err);
+        }
+      } else {
+        console.log('Skipping user email because domain is not verified and recipeient is not the owner.');
       }
     } catch (error: any) {
       console.error('Catch Error sending email:', error.message || error);

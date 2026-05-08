@@ -40,13 +40,25 @@ export default function MobileInteractivity() {
         exit={{ y: 100, opacity: 0 }}
         className="fixed bottom-24 left-6 right-6 z-[400] flex justify-center"
       >
-        <button 
+        <motion.button 
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.95 }}
           onClick={requestPermission}
-          className="bg-brand-secondary text-white px-6 py-3 rounded-full flex items-center gap-3 shadow-lg active:scale-95 transition-transform"
+          className="bg-brand-secondary text-white px-8 py-4 rounded-full flex items-center gap-4 shadow-[0_20px_50px_rgba(0,168,89,0.3)] border border-white/20 backdrop-blur-xl"
         >
-          <Zap size={18} className="animate-pulse" />
-          <span className="font-typewriter text-[10px] uppercase tracking-widest font-bold">Enable Motion Effects</span>
-        </button>
+          <div className="relative">
+            <Zap size={20} className="relative z-10" />
+            <motion.div 
+              animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="absolute inset-0 bg-white rounded-full -m-1"
+            />
+          </div>
+          <div className="flex flex-col items-start leading-none group">
+            <span className="font-typewriter text-[10px] uppercase tracking-widest font-bold">Enhance Experience</span>
+            <span className="font-editorial text-[9px] lowercase italic opacity-60 mt-1">enable motion & depth.</span>
+          </div>
+        </motion.button>
       </motion.div>
     </AnimatePresence>
   );
