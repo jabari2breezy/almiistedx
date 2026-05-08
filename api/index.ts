@@ -70,20 +70,6 @@ app.get('/api/quote', (req, res) => {
   res.json(randomQuote);
 });
 
-app.get('/api/tickets', (req, res) => {
-  res.json({
-    remaining: 42,
-    total: 300,
-    status: 'Limited'
-  });
-});
-
-app.post('/api/subscribe', (req, res) => {
-  const { email } = req.body;
-  console.log(`NEW SUBSCRIPTION: ${email}`);
-  res.json({ success: true, message: "Welcome to the inner circle." });
-});
-
 app.get('/api/schedule', (req, res) => {
   const schedule = [
     { time: '09:00', event: 'Doors Open & Registration', type: 'logistics' },
@@ -105,20 +91,56 @@ app.post('/api/register', async (req, res) => {
     try {
       const { Resend } = await import('resend');
       const resend = new Resend(resendKey);
-      await resend.emails.send({
-        from: 'TEDx Youth <onboarding@resend.dev>',
+      // Send notification to Admin
+      console.log('Attempting to send admin email via Resend...');
+      const adminEmail = await resend.emails.send({
+        from: 'onboarding@resend.dev',
         to: ['jabari2breezy@gmail.com'],
         subject: `New Get Involved Request: ${name}`,
         html: `
-          <h1>New Interest for TEDxAlMuntazirSchoolsYouth 2026</h1>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Message:</strong> ${message || 'No message provided'}</p>
+          <div style="font-family: sans-serif; line-height: 1.5; color: #002B5B;">
+            <h1 style="border-bottom: 2px solid #00A859; padding-bottom: 10px;">New Interest for TEDxAlMuntazirSchoolsYouth 2026</h1>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Message:</strong> ${message || 'No message provided'}</p>
+          </div>
         `
       });
-    } catch (error) {
-      console.error('Error sending email:', error);
+      console.log('Admin notification response:', adminEmail);
+
+      if (adminEmail.error) {
+        console.error('Resend Admin Email Error:', adminEmail.error);
+      }
+
+      // Send thank you email to User
+      console.log('Attempting to send user thank you email via Resend to:', email);
+      const userEmail = await resend.emails.send({
+        from: 'onboarding@resend.dev',
+        to: [email],
+        subject: `Thank you for your interest, ${name}!`,
+        html: `
+          <div style="font-family: sans-serif; line-height: 1.6; color: #002B5B; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 24px; padding: 40px;">
+            <h1 style="font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; margin-bottom: 24px;">Borrowed Time / <span style="color: #00A859;">TEDx</span></h1>
+            <p>Hello ${name},</p>
+            <p>Thank you for reaching out to us. We've received your message and we're thrilled to see your interest in <strong>TEDxAlMuntazirSchoolsYouth 2026</strong>.</p>
+            <p>Our theme this year is <em>"Borrowed Time"</em>, and we are working hard to curate an assembly that challenges the way we perceive and spend the moments we have. The fact that you want to be a part of this conversation means a lot to us.</p>
+            <p>Our curation and logistics teams will review your request and get back to you as soon as possible.</p>
+            <p style="margin-top: 40px; font-size: 14px; color: #002B5B; opacity: 0.6;">Stay tuned for more updates.</p>
+            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+            <p style="font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em; color: #00A859;">TEDxAlMuntazirSchoolsYouth Team</p>
+          </div>
+        `
+      });
+      console.log('User notification response:', userEmail);
+      
+      if (userEmail.error) {
+        console.error('Resend User Email Error:', userEmail.error);
+      }
+    } catch (error: any) {
+      console.error('Catch Error sending email:', error.message || error);
     }
+  } else {
+    console.warn('RESEND_API_KEY is missing. Skipping email sending.');
   }
   
   res.json({ 
@@ -127,7 +149,7 @@ app.post('/api/register', async (req, res) => {
   });
 });
 
-const setupVite = async (app: any) => {
+const setupApp = async (app: any) => {
   if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
@@ -135,16 +157,29 @@ const setupVite = async (app: any) => {
       appType: 'spa',
     });
     app.use(vite.middlewares);
+  } else {
+    // In production or on Vercel, we serve static files
+    const distPath = path.join(process.cwd(), 'dist');
+    app.use(express.static(distPath));
+    
+    // SPA Fallback for non-API routes
+    app.get(/^(?!\/api).+/, (req, res) => {
+      res.sendFile(path.join(distPath, 'index.html'));
+    });
   }
 };
 
-// Start logic for local dev
-if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-  setupVite(app).then(() => {
+// Start logic
+if (!process.env.VERCEL) {
+  // On Cloud Run or local dev, we need to listen
+  setupApp(app).then(() => {
     app.listen(PORT, '0.0.0.0', () => {
-      console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`Server running on http://localhost:${PORT} in ${process.env.NODE_ENV} mode`);
     });
   });
+} else {
+  // On Vercel, the handler is exported
+  setupApp(app);
 }
 
 export default app;

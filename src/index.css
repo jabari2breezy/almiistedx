@@ -16,6 +16,9 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-brand-background text-brand-primary selection:bg-brand-secondary selection:text-white overflow-x-hidden antialiased;
     font-family: var(--font-sans);

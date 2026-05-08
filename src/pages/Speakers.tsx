@@ -1,15 +1,26 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { SEGMENTS } from '../constants';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, X, ArrowUpRight } from 'lucide-react';
 
 const transition = { duration: 0.8, ease: [0.76, 0, 0.24, 1] };
+
+interface Speaker {
+  id: string;
+  name: string;
+  topic: string;
+  segmentId: string;
+  bio?: string;
+  image?: string;
+  role?: string;
+}
 
 export default function Speakers() {
   const [selectedSegment, setSelectedSegment] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [speakersData, setSpeakersData] = useState<{ id: string; name: string; topic: string; segmentId: string }[]>([]);
+  const [speakersData, setSpeakersData] = useState<Speaker[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker | null>(null);
 
   useEffect(() => {
     fetch('/api/speakers')
@@ -120,7 +131,10 @@ export default function Speakers() {
                   </p>
                 </div>
                 <div className="md:col-span-1 flex justify-end">
-                  <button className="w-16 h-16 rounded-full border-2 border-brand-outline flex items-center justify-center group-hover:bg-brand-secondary group-hover:border-brand-secondary transition-all text-brand-primary group-hover:text-white">
+                  <button 
+                    onClick={() => setSelectedSpeaker(speaker)}
+                    className="w-16 h-16 rounded-full border-2 border-brand-outline flex items-center justify-center group-hover:bg-brand-secondary group-hover:border-brand-secondary transition-all text-brand-primary group-hover:text-white"
+                  >
                     <Plus size={24} className="group-hover:rotate-90 transition-transform duration-500" />
                   </button>
                 </div>
@@ -130,6 +144,55 @@ export default function Speakers() {
           )}
         </div>
       </div>
+
+      {/* Polish Modal Section - Airbnb Style */}
+      <AnimatePresence>
+        {selectedSpeaker && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedSpeaker(null)}
+              className="fixed inset-0 bg-brand-primary/95 backdrop-blur-xl z-[500] cursor-pointer"
+            />
+            <motion.div
+              layoutId={`speaker-${selectedSpeaker.id}`}
+              className="fixed inset-4 md:inset-[10%] bg-white rounded-[2rem] z-[501] overflow-hidden shadow-2xl flex flex-col md:flex-row pointer-events-auto"
+            >
+              <button 
+                onClick={() => setSelectedSpeaker(null)}
+                className="absolute top-6 right-6 w-12 h-12 rounded-full bg-brand-primary/5 hover:bg-brand-primary/10 flex items-center justify-center text-brand-primary z-10 transition-colors"
+              >
+                <X size={24} />
+              </button>
+
+              <div className="w-full p-10 md:p-16 overflow-y-auto custom-scrollbar bg-white">
+                <span className="font-typewriter text-xs text-brand-secondary uppercase tracking-[0.4em] mb-4 block">
+                  {SEGMENTS.find(s => s.id === selectedSpeaker.segmentId)?.title || 'Speaker'}
+                </span>
+                <h2 className="font-kinetic text-4xl md:text-6xl font-black uppercase text-brand-primary leading-none mb-8">
+                  {selectedSpeaker.name}
+                </h2>
+                
+                <div className="space-y-12">
+                  <section>
+                    <h4 className="font-typewriter text-[9px] uppercase tracking-widest text-brand-primary/40 border-b border-brand-outline pb-4 mb-6">Manifesto Topic</h4>
+                    <p className="font-title text-2xl uppercase text-brand-primary">{selectedSpeaker.topic}</p>
+                  </section>
+
+                  <section>
+                    <h4 className="font-typewriter text-[9px] uppercase tracking-widest text-brand-primary/40 border-b border-brand-outline pb-4 mb-6">About</h4>
+                    <p className="font-editorial text-xl italic text-brand-primary/70 leading-relaxed">
+                      {selectedSpeaker.bio || "Sharing transformative insights on the intersection of humanity, technology, and the ticking clock of our shared existence."}
+                    </p>
+                  </section>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

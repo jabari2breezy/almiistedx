@@ -37,6 +37,24 @@ export default function Navbar() {
           <Logo variant="school" className="scale-90" />
         </div>
 
+        <div className="hidden md:flex items-center bg-white/5 backdrop-blur-md rounded-full p-1 border border-white/10">
+          {[
+            { name: 'Home', href: '/' },
+            { name: 'Theme', href: '/theme' },
+            { name: 'Speakers', href: '/speakers' },
+          ].map((item) => (
+            <Link 
+              key={item.href}
+              to={item.href}
+              className={`px-6 py-2 rounded-full text-[10px] font-typewriter uppercase tracking-[0.2em] transition-all hover:text-brand-secondary ${
+                location.pathname === item.href ? 'bg-brand-secondary text-white' : 'text-white/60'
+              }`}
+            >
+              {item.name}
+            </Link>
+          ))}
+        </div>
+
         {/* Registration - Minimal Pill */}
         <div className="hidden lg:block">
           <Link to="/about#contact">

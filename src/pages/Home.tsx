@@ -1,9 +1,91 @@
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'motion/react';
 import { ArrowUpRight, Clock, Hourglass, Watch, Timer, History, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 
 const transition = { duration: 1.6, ease: [0.76, 0, 0.24, 1] };
+
+interface TiltCardProps {
+  children: React.ReactNode;
+  className?: string;
+  key?: React.Key;
+}
+
+function TiltCard({ children, className = "" }: TiltCardProps) {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x);
+  const mouseYSpring = useSpring(y);
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7.5deg", "-7.5deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7.5deg", "7.5deg"]);
+
+  useEffect(() => {
+    const handleOrientation = (e: DeviceOrientationEvent) => {
+      if (e.beta !== null && e.gamma !== null) {
+        // gamma: -90 to 90 (left/right)
+        // beta: -180 to 180 (front/back)
+        const xPct = Math.max(-1, Math.min(1, e.gamma / 30));
+        const yPct = Math.max(-1, Math.min(1, (e.beta - 45) / 30));
+        x.set(xPct * 0.5);
+        y.set(yPct * 0.5);
+      }
+    };
+
+    window.addEventListener('deviceorientation', handleOrientation);
+    return () => window.removeEventListener('deviceorientation', handleOrientation);
+  }, [x, y]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const touch = e.touches[0];
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = touch.clientX - rect.left;
+    const mouseY = touch.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  return (
+    <motion.div
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleMouseLeave}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d",
+      }}
+      className={`relative ${className}`}
+    >
+      <div style={{ transform: "translateZ(50px)", transformStyle: "preserve-3d" }}>
+        {children}
+      </div>
+    </motion.div>
+  );
+}
 
 interface EventStatus {
   status: 'upcoming' | 'live';
@@ -104,15 +186,17 @@ function AnimatedText({ text, delay = 0 }: { text: string, delay?: number }) {
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [eventStatus, setEventStatus] = useState<EventStatus | null>(null);
-  const [ticketStatus, setTicketStatus] = useState<TicketStatus | null>(null);
   const [updates, setUpdates] = useState<Update[]>([]);
-  const [email, setEmail] = useState('');
-  const [subStatus, setSubStatus] = useState<'idle' | 'loading' | 'success'>('idle');
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
   });
+
+  const heroScale = useTransform(scrollYProgress, [0, 0.3], [1, 1.2]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const heroRotate = useTransform(scrollYProgress, [0, 0.3], [0, 5]);
+  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, 100]);
 
   const liquidY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
   const charX = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
@@ -127,29 +211,8 @@ export default function Home() {
     fetch('/api/updates')
       .then(res => res.json())
       .then(setUpdates);
-
-    fetch('/api/tickets')
-      .then(res => res.json())
-      .then(setTicketStatus);
   }, []);
 
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubStatus('loading');
-    try {
-      await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      });
-      setSubStatus('success');
-      setEmail('');
-      setTimeout(() => setSubStatus('idle'), 3000);
-    } catch (error) {
-      console.error(error);
-      setSubStatus('idle');
-    }
-  };
 
   return (
     <motion.div 
@@ -189,7 +252,10 @@ export default function Home() {
           className="absolute top-1/2 left-1/4 w-96 h-96 border border-brand-secondary/10 rounded-full pointer-events-none"
         />
 
-        <div className="max-w-screen-2xl mx-auto w-full relative z-10">
+        <motion.div 
+          style={{ scale: heroScale, opacity: heroOpacity, rotateX: heroRotate, y: heroY }}
+          className="max-w-screen-2xl mx-auto w-full relative z-10"
+        >
           <motion.div style={{ opacity: textOpacity }} className="flex flex-col gap-2 mb-20">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -237,28 +303,6 @@ export default function Home() {
                 <span className="text-brand-primary font-bold">ALMUNTAZIR ISLAMIC INTERNATIONAL SCHOOL - Nursery Campus</span>
               </div>
 
-              {/* Ticket Status */}
-              {ticketStatus && (
-                <div className="flex items-center justify-between p-6 bg-brand-primary text-white rounded-2xl overflow-hidden relative group">
-                  <div className="relative z-10 flex flex-col">
-                    <span className="font-typewriter text-[9px] uppercase tracking-[0.4em] text-white/40">Status: {ticketStatus.status}</span>
-                    <span className="font-title text-2xl font-black">{ticketStatus.remaining} / {ticketStatus.total}</span>
-                    <span className="font-typewriter text-[9px] uppercase tracking-[0.2em] text-brand-secondary">Remaining Tokens</span>
-                  </div>
-                  <div className="relative z-10 flex h-1.5 w-24 bg-white/10 rounded-full overflow-hidden self-end mb-1">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${(ticketStatus.remaining / ticketStatus.total) * 100}%` }}
-                      transition={{ duration: 1.5, ease: "circOut" }}
-                      className="h-full bg-brand-secondary"
-                    />
-                  </div>
-                  <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform">
-                    <Clock size={80} />
-                  </div>
-                </div>
-              )}
-
               {/* Countdown or Register Link */}
               {eventStatus?.status === 'live' ? (
                 <div className="bg-brand-secondary/10 border border-brand-secondary p-8 rounded-3xl flex items-center gap-4 animate-pulse">
@@ -274,7 +318,7 @@ export default function Home() {
               )}
             </motion.div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Latest Updates Section */}
@@ -289,18 +333,20 @@ export default function Home() {
             {updates.length === 0 ? (
                 [1,2,3].map(i => <div key={i} className="h-40 bg-brand-outline/20 rounded-3xl animate-pulse" />)
             ) : (
-              updates.map(update => (
-                <motion.div 
-                  key={update.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="bg-white p-8 rounded-3xl border border-brand-outline hover:border-brand-secondary/30 transition-colors"
-                >
-                  <span className="text-[10px] font-typewriter text-brand-secondary mb-4 block uppercase tracking-widest">{update.date}</span>
-                  <h4 className="font-title text-xl text-brand-primary mb-2 uppercase">{update.title}</h4>
-                  <p className="font-editorial text-lg text-brand-primary/60 italic leading-tight">{update.content}</p>
-                </motion.div>
+              updates.map((update, idx) => (
+                <TiltCard key={update.id}>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="bg-white p-8 rounded-3xl border border-brand-outline hover:border-brand-secondary/30 transition-colors h-full"
+                  >
+                    <span className="text-[10px] font-typewriter text-brand-secondary mb-4 block uppercase tracking-widest">{update.date}</span>
+                    <h4 className="font-title text-xl text-brand-primary mb-2 uppercase">{update.title}</h4>
+                    <p className="font-editorial text-lg text-brand-primary/60 italic leading-tight">{update.content}</p>
+                  </motion.div>
+                </TiltCard>
               ))
             )}
           </div>
@@ -349,63 +395,27 @@ export default function Home() {
                 text: 'The worlds we will never inhabit. Defining our responsibility for the generations to come.' 
               }
             ].map((item, i) => (
-              <motion.div 
-                key={item.title} 
-                className="p-10 border border-brand-outline rounded-3xl hover:border-brand-secondary transition-all group bg-white shadow-sm"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <div className="flex justify-between items-start mb-6">
-                  <span className="font-typewriter text-[10px] text-brand-secondary uppercase tracking-[0.4em]">Unit_0{i+1}</span>
-                  <span className="font-editorial text-sm italic text-brand-primary/30 uppercase">{item.sub}</span>
-                </div>
-                <h4 className="font-title text-3xl uppercase text-brand-primary mb-4">{item.title}</h4>
-                <p className="font-editorial text-xl text-brand-primary/60 italic leading-tight group-hover:text-brand-primary transition-colors">{item.text}</p>
-              </motion.div>
+              <TiltCard key={item.title}>
+                <motion.div 
+                  className="p-10 border border-brand-outline rounded-3xl hover:border-brand-secondary transition-all group bg-white/80 backdrop-blur-sm shadow-sm"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <div className="flex justify-between items-start mb-6">
+                    <span className="font-typewriter text-[10px] text-brand-secondary uppercase tracking-[0.4em]">Unit_0{i+1}</span>
+                    <span className="font-editorial text-sm italic text-brand-primary/30 uppercase">{item.sub}</span>
+                  </div>
+                  <h4 className="font-title text-3xl uppercase text-brand-primary mb-4">{item.title}</h4>
+                  <p className="font-editorial text-xl text-brand-primary/60 italic leading-tight group-hover:text-brand-primary transition-colors">{item.text}</p>
+                </motion.div>
+              </TiltCard>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Newsletter Section */}
-      <section className="px-6 md:px-16 py-40 bg-brand-primary text-white overflow-hidden relative">
-        <div className="absolute inset-0 liquid-bg opacity-10" />
-        <div className="max-w-screen-2xl mx-auto relative z-10 text-center flex flex-col items-center">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="mb-12"
-            >
-              <h3 className="font-kinetic text-4xl md:text-7xl font-black tracking-tighter uppercase leading-none mb-6">
-                Don't let the <br /><span className="text-brand-secondary italic">Clock Run Out.</span>
-              </h3>
-              <p className="font-editorial text-xl md:text-2xl text-white/40 italic max-w-2xl mx-auto">
-                Join our newsletter to receive event insights, speaker announcements, and thought pieces on our limited time.
-              </p>
-            </motion.div>
-
-            <form onSubmit={handleSubscribe} className="relative w-full max-w-xl group">
-              <input 
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="YOUR_EMAIL_ADDRESS"
-                className="w-full bg-transparent border-b border-white/20 py-6 font-typewriter text-sm tracking-[0.2em] focus:outline-none focus:border-brand-secondary transition-colors text-center"
-              />
-              <button 
-                type="submit"
-                disabled={subStatus !== 'idle'}
-                className="mt-12 brutalist-button w-full border-white/10 hover:border-brand-secondary"
-              >
-                {subStatus === 'idle' ? 'SUBSCRIBE TO THE STREAM' : subStatus === 'loading' ? 'TRANSMITTING...' : 'WELCOME TO THE CIRCLE'}
-              </button>
-            </form>
-        </div>
-      </section>
     </motion.div>
   );
 }
