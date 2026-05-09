@@ -106,25 +106,30 @@ export default function Navbar() {
                   key={item.name}
                   to={item.href}
                   onClick={() => setIsOpen(false)}
-                  className="group relative flex items-baseline gap-12 py-6 border-b border-white/5 last:border-none overflow-hidden"
+                  className="group relative flex items-baseline gap-12 py-8 border-b border-white/5 last:border-none overflow-hidden"
                 >
-                  <span className="font-typewriter text-sm text-brand-secondary/30 group-hover:text-brand-secondary transition-colors">
+                  <span className="font-typewriter text-xs text-brand-secondary/30 group-hover:text-brand-secondary transition-colors">
                     {item.id}
                   </span>
                   <div className="flex flex-col">
                     <motion.span 
-                      initial={{ y: 100 }}
-                      animate={{ y: 0 }}
-                      transition={{ delay: 0.3 + (i * 0.1), duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
-                      className={`text-4xl md:text-7xl font-kinetic font-black tracking-tighter uppercase leading-[0.85] transition-all ${
-                        location.pathname === item.href ? 'text-brand-secondary' : 'text-white group-hover:italic group-hover:pl-8'
+                      initial={{ y: 100, rotate: 5 }}
+                      animate={{ y: 0, rotate: 0 }}
+                      transition={{ delay: 0.3 + (i * 0.08), duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                      className={`text-5xl md:text-8xl font-kinetic font-black tracking-tighter uppercase leading-[0.8] transition-all duration-700 ${
+                        location.pathname === item.href ? 'text-brand-secondary' : 'text-white group-hover:italic group-hover:translate-x-8'
                       }`}
                     >
                       {item.name}
                     </motion.span>
-                    <span className="font-typewriter text-[10px] uppercase tracking-[1em] text-white/20 group-hover:text-white/60 transition-all opacity-0 group-hover:opacity-100 pl-4 mt-2">
+                    <motion.span 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.6 + (i * 0.1) }}
+                      className="font-typewriter text-[9px] uppercase tracking-[1em] text-white/20 group-hover:text-white/60 transition-all pl-2 md:pl-4 mt-4"
+                    >
                       {item.sub}
-                    </span>
+                    </motion.span>
                   </div>
                 </Link>
               ))}

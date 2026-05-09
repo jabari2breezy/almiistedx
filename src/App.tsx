@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'motion/react';
 import Navbar from './components/Navbar';
 import FloatingCursor from './components/FloatingCursor';
 import InteractiveBackground from './components/InteractiveBackground';
-import MobileInteractivity from './components/MobileInteractivity';
 import Home from './pages/Home';
 import Theme from './pages/Theme';
 import SpeakersPage from './pages/Speakers';
@@ -42,7 +41,6 @@ export default function App() {
       <div className="relative selection:bg-brand-secondary selection:text-white min-h-screen flex flex-col">
         <InteractiveBackground />
         <FloatingCursor />
-        <MobileInteractivity />
         <ScrollToTop />
         <Navbar />
         <main className="flex-grow">

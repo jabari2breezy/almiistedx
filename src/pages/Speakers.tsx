@@ -2,8 +2,32 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { SEGMENTS } from '../constants';
 import { Search, Plus, X, ArrowUpRight } from 'lucide-react';
+import Magnetic from '../components/Magnetic';
 
-const transition = { duration: 0.8, ease: [0.76, 0, 0.24, 1] };
+const transition = { duration: 0.6, ease: [0.22, 1, 0.36, 1] };
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05
+    }
+  }
+};
+
+const speakerVariants = {
+  hidden: { opacity: 0, scale: 0.95, y: 30 },
+  visible: { 
+    opacity: 1, 
+    scale: 1, 
+    y: 0,
+    transition: { 
+      duration: 0.8, 
+      ease: [0.16, 1, 0.3, 1] 
+    }
+  }
+};
 
 interface Speaker {
   id: string;
@@ -21,6 +45,12 @@ export default function Speakers() {
   const [speakersData, setSpeakersData] = useState<Speaker[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker | null>(null);
+
+  const hapticTick = () => {
+    if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
+      window.navigator.vibrate(10);
+    }
+  };
 
   useEffect(() => {
     fetch('/api/speakers')
@@ -74,7 +104,10 @@ export default function Speakers() {
             {['all', ...SEGMENTS.map(s => s.id)].map(id => (
               <button
                 key={id}
-                onClick={() => setSelectedSegment(id)}
+                onClick={() => {
+                  setSelectedSegment(id);
+                  hapticTick();
+                }}
                 className={`py-3 font-typewriter text-[11px] uppercase tracking-[0.4em] transition-all relative ${
                   selectedSegment === id ? 'text-brand-secondary' : 'text-brand-primary/40 hover:text-brand-primary'
                 }`}
@@ -106,17 +139,21 @@ export default function Speakers() {
               Retrieving the Assembly...
             </div>
           ) : (
-            <AnimatePresence mode="popLayout">
-              {filteredSpeakers.map((speaker, i) => (
-              <motion.div
-                key={speaker.id}
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ delay: i * 0.05 }}
-                className="group relative grid grid-cols-1 md:grid-cols-12 gap-8 py-16 border-b border-brand-outline hover:bg-brand-surface transition-colors px-6 -mx-6 rounded-[2rem] items-center"
-              >
+            <motion.div 
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="space-y-4"
+            >
+              <AnimatePresence mode="popLayout">
+                {filteredSpeakers.map((speaker, i) => (
+                <motion.div
+                  key={speaker.id}
+                  layout
+                  variants={speakerVariants}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="group relative grid grid-cols-1 md:grid-cols-12 gap-8 py-16 border-b border-brand-outline hover:bg-brand-surface transition-colors px-6 -mx-6 rounded-[2rem] items-center"
+                >
                 <div className="md:col-span-1 font-typewriter text-[11px] text-brand-primary/20 group-hover:text-brand-secondary transition-colors">
                   0{i + 1}
                 </div>
@@ -131,16 +168,22 @@ export default function Speakers() {
                   </p>
                 </div>
                 <div className="md:col-span-1 flex justify-end">
-                  <button 
-                    onClick={() => setSelectedSpeaker(speaker)}
-                    className="w-16 h-16 rounded-full border-2 border-brand-outline flex items-center justify-center group-hover:bg-brand-secondary group-hover:border-brand-secondary transition-all text-brand-primary group-hover:text-white"
-                  >
-                    <Plus size={24} className="group-hover:rotate-90 transition-transform duration-500" />
-                  </button>
+                  <Magnetic strength={0.4}>
+                    <button 
+                      onClick={() => {
+                        setSelectedSpeaker(speaker);
+                        hapticTick();
+                      }}
+                      className="w-16 h-16 rounded-full border-2 border-brand-outline flex items-center justify-center group-hover:bg-brand-secondary group-hover:border-brand-secondary transition-all text-brand-primary group-hover:text-white"
+                    >
+                      <Plus size={24} className="group-hover:rotate-90 transition-transform duration-500" />
+                    </button>
+                  </Magnetic>
                 </div>
               </motion.div>
             ))}
-            </AnimatePresence>
+              </AnimatePresence>
+            </motion.div>
           )}
         </div>
       </div>
@@ -158,16 +201,21 @@ export default function Speakers() {
             />
             <motion.div
               layoutId={`speaker-${selectedSpeaker.id}`}
-              className="fixed inset-4 md:inset-[10%] bg-white rounded-[2rem] z-[501] overflow-hidden shadow-2xl flex flex-col md:flex-row pointer-events-auto"
+              initial={{ y: "100%", opacity: 0.5 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed bottom-0 left-0 right-0 md:inset-4 lg:inset-[10%] bg-white rounded-t-[2.5rem] md:rounded-[2rem] z-[501] overflow-hidden shadow-2xl flex flex-col md:flex-row pointer-events-auto h-[90vh] md:h-auto"
             >
               <button 
                 onClick={() => setSelectedSpeaker(null)}
-                className="absolute top-6 right-6 w-12 h-12 rounded-full bg-brand-primary/5 hover:bg-brand-primary/10 flex items-center justify-center text-brand-primary z-10 transition-colors"
+                className="absolute top-6 right-8 md:right-6 w-12 h-12 rounded-full bg-brand-primary/5 hover:bg-brand-primary/10 flex items-center justify-center text-brand-primary z-10 transition-colors"
               >
                 <X size={24} />
               </button>
 
-              <div className="w-full p-10 md:p-16 overflow-y-auto custom-scrollbar bg-white">
+              <div className="w-full p-10 md:p-16 pt-16 overflow-y-auto custom-scrollbar bg-white">
+                <div className="w-12 h-1.5 bg-brand-outline/40 rounded-full mx-auto mb-8 md:hidden" />
                 <span className="font-typewriter text-xs text-brand-secondary uppercase tracking-[0.4em] mb-4 block">
                   {SEGMENTS.find(s => s.id === selectedSpeaker.segmentId)?.title || 'Speaker'}
                 </span>

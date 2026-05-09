@@ -2,8 +2,42 @@ import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'moti
 import { ArrowUpRight, Clock, Hourglass, Watch, Timer, History, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import React, { useRef, useEffect, useState } from 'react';
+import Magnetic from '../components/Magnetic';
+import CharReveal from '../components/CharReveal';
 
-const transition = { duration: 1.6, ease: [0.76, 0, 0.24, 1] };
+const transition = { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] };
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.3
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+  }
+};
+
+const titleVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { 
+      duration: 1.2, 
+      ease: [0.16, 1, 0.3, 1]
+    }
+  }
+};
 
 interface TiltCardProps {
   children: React.ReactNode;
@@ -15,11 +49,11 @@ function TiltCard({ children, className = "" }: TiltCardProps) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const mouseXSpring = useSpring(x);
-  const mouseYSpring = useSpring(y);
+  const mouseXSpring = useSpring(x, { stiffness: 60, damping: 30 });
+  const mouseYSpring = useSpring(y, { stiffness: 60, damping: 30 });
 
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7.5deg", "-7.5deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7.5deg", "7.5deg"]);
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["3deg", "-3deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-3deg", "3deg"]);
 
   useEffect(() => {
     const handleOrientation = (e: DeviceOrientationEvent) => {
@@ -168,21 +202,6 @@ function ParallaxIcon({ icon: Icon, speed, left, top, delay = 0, size = 120 }: {
   );
 }
 
-function AnimatedText({ text, delay = 0 }: { text: string, delay?: number }) {
-  return (
-    <div className="char-reveal relative">
-      <motion.span
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        transition={{ ...transition, delay }}
-        className="block"
-      >
-        {text}
-      </motion.span>
-    </div>
-  );
-}
-
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [eventStatus, setEventStatus] = useState<EventStatus | null>(null);
@@ -193,15 +212,17 @@ export default function Home() {
     offset: ["start start", "end start"]
   });
 
-  const heroScale = useTransform(scrollYProgress, [0, 0.3], [1, 1.2]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-  const heroRotate = useTransform(scrollYProgress, [0, 0.3], [0, 5]);
-  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, 100]);
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 30, damping: 25 });
 
-  const liquidY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const charX = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
-  const circleY = useTransform(scrollYProgress, [0, 1], ["0%", "-30%"]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const heroScale = useTransform(smoothProgress, [0, 0.3], [1, 1.05]);
+  const heroOpacity = useTransform(smoothProgress, [0, 0.2], [1, 0]);
+  const heroRotate = useTransform(smoothProgress, [0, 0.3], [0, 2]);
+  const heroY = useTransform(smoothProgress, [0, 0.3], [0, 30]);
+
+  const liquidY = useTransform(smoothProgress, [0, 1], ["0%", "15%"]);
+  const charX = useTransform(smoothProgress, [0, 1], ["0%", "5%"]);
+  const circleY = useTransform(smoothProgress, [0, 1], ["0%", "-10%"]);
+  const textOpacity = useTransform(smoothProgress, [0, 0.4], [1, 0]);
 
   useEffect(() => {
     fetch('/api/event-status')
@@ -214,16 +235,26 @@ export default function Home() {
   }, []);
 
 
-  const hapticFeedback = () => {
+  const hapticTick = () => {
     if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
       window.navigator.vibrate(10);
     }
   };
 
+  const lastDragPos = useRef(0);
+  const handleDrag = (_: any, info: any) => {
+    const threshold = 60; // px between ticks
+    if (Math.abs(info.point.x - lastDragPos.current) > threshold) {
+      hapticTick();
+      lastDragPos.current = info.point.x;
+    }
+  };
+
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
       exit={{ opacity: 0 }}
       className="pt-40"
       ref={containerRef}
@@ -264,45 +295,41 @@ export default function Home() {
         >
           <motion.div style={{ opacity: textOpacity }} className="flex flex-col gap-2 mb-20">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 0.6, x: 0 }}
-              transition={{ delay: 0.6 }}
+              variants={itemVariants}
               className="flex items-center gap-6 text-brand-secondary font-typewriter text-[10px] uppercase tracking-[0.8em]"
             >
               <div className="w-16 h-[1px] bg-brand-secondary/40" />
               {eventStatus ? `${eventStatus.daysRemaining} DAYS REMAINING` : 'Event / 14th June 2026'}
             </motion.div>
             
-            <h1 className="text-[12vw] md:text-[10vw] font-title font-black tracking-tighter leading-[0.78] uppercase flex flex-col pt-8 text-brand-primary">
-              <AnimatedText text="TEDx" />
+            <motion.h1 
+              variants={titleVariants}
+              className="text-[12vw] md:text-[10vw] font-title font-black tracking-tighter leading-[0.78] uppercase flex flex-col pt-8 text-brand-primary"
+            >
+              <CharReveal text="TEDx" delay={0.5} />
               <div className="flex items-baseline gap-4">
                 <span className="italic font-editorial lowercase -ml-4 pr-4 text-brand-secondary">AlMuntazir</span>
-                <AnimatedText text="2026" delay={0.2} />
+                <CharReveal text="2026" delay={0.8} />
               </div>
-            </h1>
+            </motion.h1>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-end">
             <motion.div 
               className="md:col-span-8 lg:col-span-7"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...transition, delay: 0.6 }}
+              variants={itemVariants}
             >
             <p className="font-editorial text-3xl md:text-5xl text-brand-primary leading-[1.1] italic">
-                We're living on <span className="text-brand-secondary font-title not-italic uppercase">Borrowed Time</span>. 
+                <CharReveal text="We're living on" delay={1} className="inline-block" /> <span className="text-brand-secondary font-title not-italic uppercase">Borrowed Time</span>. 
               </p>
               <p className="mt-8 font-sans text-xl text-brand-primary/70 max-w-3xl leading-relaxed">
-                This theme explores the idea that the time we have individually and collectively is limited, and what we choose to do with it matters. 
-                Inviting conversations on the systems, choices and moments that shape our world, whether that means preserving the past, fixing the present or reimagining a new future.
+                <CharReveal text="This theme explores the idea that the time we have individually and collectively is limited, and what we choose to do with it matters. Inviting conversations on the systems, choices and moments that shape our world, whether that means preserving the past, fixing the present or reimagining a new future." delay={1.2} />
               </p>
             </motion.div>
 
             <motion.div
               className="md:col-start-9 md:col-span-4 flex flex-col gap-8"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ ...transition, delay: 0.8 }}
+              variants={itemVariants}
             >
               <div className="flex flex-col gap-2 font-typewriter text-[10px] uppercase tracking-[0.4em] text-brand-primary/40">
                 <span>Location</span>
@@ -316,15 +343,17 @@ export default function Home() {
                   <span className="font-title uppercase font-black text-brand-secondary">Assembly is Live</span>
                 </div>
               ) : (
-                <Link 
-                  to="/speakers" 
-                  onClick={hapticFeedback}
-                  className="brutalist-button w-full group !bg-brand-secondary !text-white border-transparent"
-                >
-                  <span className="flex items-center gap-6">
-                    MEET THE SPEAKERS <ArrowUpRight size={18} className="group-hover:rotate-45 transition-transform duration-500" />
-                  </span>
-                </Link>
+                <Magnetic strength={0.2} className="w-full">
+                  <Link 
+                    to="/speakers" 
+                    onClick={hapticTick}
+                    className="brutalist-button w-full group !bg-brand-secondary !text-white border-transparent"
+                  >
+                    <span className="flex items-center gap-6">
+                      MEET THE SPEAKERS <ArrowUpRight size={18} className="group-hover:rotate-45 transition-transform duration-500" />
+                    </span>
+                  </Link>
+                </Magnetic>
               )}
             </motion.div>
           </div>
@@ -346,6 +375,8 @@ export default function Home() {
           
           <motion.div 
             drag="x"
+            onDrag={handleDrag}
+            onDragStart={() => { lastDragPos.current = 0; hapticTick(); }}
             dragConstraints={{ left: -600, right: 0 }}
             dragElastic={0.2}
             className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 min-w-max md:min-w-0"
@@ -357,7 +388,7 @@ export default function Home() {
                 <div key={update.id} className="w-[85vw] md:w-full h-full flex-shrink-0">
                   <TiltCard>
                     <motion.div 
-                      onPointerDown={hapticFeedback}
+                      onPointerDown={hapticTick}
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
@@ -421,7 +452,7 @@ export default function Home() {
               <div key={item.title} className="w-[85vw] md:w-full flex-shrink-0">
                 <TiltCard>
                   <motion.div 
-                    onClick={hapticFeedback}
+                    onClick={hapticTick}
                     className="p-10 border border-brand-outline rounded-3xl hover:border-brand-secondary transition-all group bg-white/80 backdrop-blur-sm shadow-sm"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}

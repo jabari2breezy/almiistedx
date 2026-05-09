@@ -18,7 +18,13 @@ app.get('/api/health', (req, res) => {
 app.get('/api/speakers', (req, res) => {
   const speakers = [
     { id: '1', name: 'Anaya Rashid', topic: 'The Culture of Time', segmentId: 'past' },
-    { id: '2', name: 'Zahra Datoo', topic: 'The Architecture of Nostalgia', segmentId: 'past' },
+    { 
+      id: '2', 
+      name: 'Zahra Datoo', 
+      topic: 'The Architecture of Nostalgia', 
+      segmentId: 'past',
+      bio: "Zahra Datoo explores the profound value of time through the lens of nostalgia, arguing that life's true worth lies not in productivity, but in meaningful moments of presence. By contrasting the transient nature of money with the irreplaceable gift of time, she highlights how simple, seemingly insignificant memories become the priceless anchors of our identity. Her message is a powerful call to stop waiting for perfection, embrace uncertainty, and live fully in the present, creating a legacy of human moments that prove we were truly alive."
+    },
     { id: '3', name: 'Hassan Abbas Mohammed', topic: 'The Procrastination Paradox', segmentId: 'present' },
     { id: '4', name: 'Zahra Moledina', topic: "Capitalism's Clock", segmentId: 'present' },
     { id: '5', name: 'Liyaan Karbelkar', topic: 'The Legacy We Leave', segmentId: 'future' },

@@ -50,18 +50,18 @@ export default function InteractiveBackground() {
     };
   }, []);
 
-  // Spotlight effect (GitBook style)
-  const spotlightX = useSpring(inputX, { stiffness: 150, damping: 40 });
-  const spotlightY = useSpring(inputY, { stiffness: 150, damping: 40 });
+  // Spotlight effect (GitBook style) - Laxer springs for smoother motion
+  const spotlightX = useSpring(inputX, { stiffness: 30, damping: 25 });
+  const spotlightY = useSpring(inputY, { stiffness: 30, damping: 25 });
 
   // Dynamic colors based on scroll (Spotify style)
   const bgGradient = useTransform(
     smoothY,
-    [0, 0.5, 1],
+    [0, 0.45, 1],
     [
-      'radial-gradient(circle at 0% 0%, rgba(0, 168, 89, 0.15) 0%, transparent 50%), radial-gradient(circle at 100% 100%, rgba(0, 43, 91, 0.2) 0%, transparent 50%)',
-      'radial-gradient(circle at 50% 50%, rgba(0, 168, 89, 0.1) 0%, transparent 70%), radial-gradient(circle at 0% 100%, rgba(0, 43, 91, 0.3) 0%, transparent 50%)',
-      'radial-gradient(circle at 100% 0%, rgba(0, 168, 89, 0.2) 0%, transparent 50%), radial-gradient(circle at 50% 100%, rgba(0, 43, 91, 0.4) 0%, transparent 50%)'
+      'radial-gradient(circle at 0% 0%, rgba(0, 168, 89, 0.08) 0%, transparent 50%), radial-gradient(circle at 100% 100%, rgba(0, 43, 91, 0.1) 0%, transparent 50%)',
+      'radial-gradient(circle at 50% 50%, rgba(0, 168, 89, 0.05) 0%, transparent 60%), radial-gradient(circle at 0% 100%, rgba(0, 43, 91, 0.15) 0%, transparent 50%)',
+      'radial-gradient(circle at 100% 0%, rgba(0, 168, 89, 0.12) 0%, transparent 50%), radial-gradient(circle at 50% 100%, rgba(0, 43, 91, 0.2) 0%, transparent 50%)'
     ]
   );
 
@@ -69,15 +69,15 @@ export default function InteractiveBackground() {
     <motion.div 
       ref={containerRef} 
       style={{ background: bgGradient }}
-      className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden bg-brand-background transition-colors duration-1000"
+      className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden bg-brand-background transition-colors duration-[3000ms] ease-in-out"
     >
       {/* GitBook Style Spotlight */}
       <motion.div 
-        className="absolute inset-0 z-10 opacity-[0.4]"
+        className="absolute inset-0 z-10 opacity-[0.3]"
         style={{
           background: useTransform(
             [spotlightX, spotlightY],
-            ([x, y]) => `radial-gradient(circle 400px at ${x}px ${y}px, rgba(0, 168, 89, 0.08), transparent 80%)`
+            ([x, y]) => `radial-gradient(circle 350px at ${x}px ${y}px, rgba(0, 168, 89, 0.06), transparent 80%)`
           ),
         }}
       />
