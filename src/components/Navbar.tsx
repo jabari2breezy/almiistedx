@@ -37,7 +37,8 @@ export default function Navbar() {
           <Logo variant="school" className="scale-90" />
         </div>
 
-        <div className="hidden md:flex items-center bg-white/5 backdrop-blur-md rounded-full p-1 border border-white/10">
+        {/* Navbar Pill - Desktop */}
+        <div className="hidden md:flex items-center bg-brand-primary/5 backdrop-blur-md rounded-full p-1 border border-brand-primary/10">
           {[
             { name: 'Home', href: '/' },
             { name: 'Theme', href: '/theme' },
@@ -47,7 +48,7 @@ export default function Navbar() {
               key={item.href}
               to={item.href}
               className={`px-6 py-2 rounded-full text-[10px] font-typewriter uppercase tracking-[0.2em] transition-all hover:text-brand-secondary ${
-                location.pathname === item.href ? 'bg-brand-secondary text-white' : 'text-white/60'
+                location.pathname === item.href ? 'bg-brand-secondary text-white shadow-sm' : 'text-brand-primary/60'
               }`}
             >
               {item.name}
@@ -58,20 +59,23 @@ export default function Navbar() {
         {/* Registration - Minimal Pill */}
         <div className="hidden lg:block">
           <Link to="/about#contact">
-            <button className="brutalist-button px-10 py-3 text-[10px] tracking-[0.4em] font-sans !bg-brand-secondary !text-white border-transparent">
+            <button className="brutalist-button px-10 py-3 text-[10px] tracking-[0.4em] font-sans !bg-brand-primary !text-white border-transparent hover:!bg-brand-secondary transition-colors">
               REGISTER NOW
             </button>
           </Link>
         </div>
 
-        {/* Menu Toggle - Oryzo style */}
+        {/* Menu Toggle - Enhanced for visibility */}
         <button 
-          className="group flex items-center gap-6 text-brand-primary"
+          className="group flex items-center gap-5 bg-brand-primary/5 hover:bg-brand-primary/10 backdrop-blur-md border border-brand-primary/10 rounded-full pl-6 pr-4 py-2 transition-all pointer-events-auto"
           onClick={() => setIsOpen(!isOpen)}
         >
+          <span className="font-typewriter text-[9px] uppercase tracking-[0.3em] text-brand-primary/70 group-hover:text-brand-secondary transition-colors">
+            Menu
+          </span>
           <div className="flex flex-col items-end gap-1.5 transition-all">
-            <span className="h-[1px] bg-brand-primary transition-all duration-500 w-8 group-hover:w-12 group-hover:bg-brand-secondary" />
-            <span className="h-[1px] bg-brand-primary transition-all duration-500 w-12 group-hover:w-8 group-hover:bg-brand-secondary" />
+            <span className="h-[1px] bg-brand-primary transition-all duration-500 w-6 group-hover:w-8 group-hover:bg-brand-secondary" />
+            <span className="h-[1px] bg-brand-primary transition-all duration-500 w-8 group-hover:w-4 group-hover:bg-brand-secondary" />
           </div>
         </button>
       </div>

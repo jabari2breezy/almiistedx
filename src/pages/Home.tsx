@@ -215,14 +215,14 @@ export default function Home() {
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 30, damping: 25 });
 
   const heroScale = useTransform(smoothProgress, [0, 0.3], [1, 1.05]);
-  const heroOpacity = useTransform(smoothProgress, [0, 0.2], [1, 0]);
+  const heroOpacity = useTransform(smoothProgress, [0, 0.3], [1, 1]);
   const heroRotate = useTransform(smoothProgress, [0, 0.3], [0, 2]);
   const heroY = useTransform(smoothProgress, [0, 0.3], [0, 30]);
 
   const liquidY = useTransform(smoothProgress, [0, 1], ["0%", "15%"]);
   const charX = useTransform(smoothProgress, [0, 1], ["0%", "5%"]);
   const circleY = useTransform(smoothProgress, [0, 1], ["0%", "-10%"]);
-  const textOpacity = useTransform(smoothProgress, [0, 0.4], [1, 0]);
+  const textOpacity = useTransform(smoothProgress, [0, 0.5], [1, 1]);
 
   useEffect(() => {
     fetch('/api/event-status')
@@ -336,24 +336,12 @@ export default function Home() {
                 <span className="text-brand-primary font-bold">ALMUNTAZIR ISLAMIC INTERNATIONAL SCHOOL - Nursery Campus</span>
               </div>
 
-              {/* Countdown or Register Link */}
-              {eventStatus?.status === 'live' ? (
+              {/* Status Indicator */}
+              {eventStatus?.status === 'live' && (
                 <div className="bg-brand-secondary/10 border border-brand-secondary p-8 rounded-3xl flex items-center gap-4 animate-pulse">
                   <div className="w-3 h-3 bg-red-500 rounded-full" />
                   <span className="font-title uppercase font-black text-brand-secondary">Assembly is Live</span>
                 </div>
-              ) : (
-                <Magnetic strength={0.2} className="w-full">
-                  <Link 
-                    to="/speakers" 
-                    onClick={hapticTick}
-                    className="brutalist-button w-full group !bg-brand-secondary !text-white border-transparent"
-                  >
-                    <span className="flex items-center gap-6">
-                      MEET THE SPEAKERS <ArrowUpRight size={18} className="group-hover:rotate-45 transition-transform duration-500" />
-                    </span>
-                  </Link>
-                </Magnetic>
               )}
             </motion.div>
           </div>
