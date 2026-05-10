@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
-import { Quote, Clock, ShieldAlert, Sparkles, Zap } from 'lucide-react';
+import { Quote, ShieldAlert, Sparkles, Zap, Clock as ClockIcon } from 'lucide-react';
+import { MechanicalClock } from '../components/ModernAnimation';
 
 const transition = { duration: 1.2, ease: [0.76, 0, 0.24, 1] };
 
@@ -72,9 +73,9 @@ export default function Theme() {
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
-                  className="relative opacity-10"
+                  className="relative opacity-20"
                 >
-                  <Clock size={400} className="text-white" strokeWidth={0.5} />
+                  <MechanicalClock className="w-[400px] h-[400px] text-white" />
                 </motion.div>
             </div>
           </div>
@@ -102,7 +103,7 @@ export default function Theme() {
             },
             { 
               title: 'Pursuing Peace', 
-              icon: <Clock size={24} />,
+              icon: <ClockIcon size={24} />,
               text: 'To pursue peace in a world that keeps making war feel inevitable.' 
             },
             { 

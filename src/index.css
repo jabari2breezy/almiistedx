@@ -17,15 +17,22 @@
 
 @layer base {
   html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto; /* Required for Lenis */
   }
   body {
     @apply bg-brand-background text-brand-primary selection:bg-brand-secondary selection:text-white overflow-x-hidden antialiased;
     font-family: var(--font-sans);
   }
 
+  /* Noise Overlay: World-Class Texture */
+  body::after {
+    content: "";
+    @apply fixed inset-0 z-[9999] pointer-events-none opacity-[0.03];
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+
   h1, h2, h3 {
-    @apply tracking-tighter uppercase;
+    @apply tracking-tighter uppercase leading-[0.9];
     font-family: var(--font-title);
   }
 }
@@ -36,18 +43,30 @@
 }
 
 .brutalist-button {
-  @apply px-10 py-4 font-bold uppercase tracking-[0.3em] text-[9px] bg-transparent text-white border border-white/20 hover:border-brand-secondary hover:bg-brand-secondary transition-all duration-500 rounded-full flex items-center justify-center;
+  @apply px-10 py-4 font-bold uppercase tracking-[0.3em] text-[9px] bg-transparent text-white border border-white/20 hover:border-brand-secondary hover:bg-brand-secondary transition-all duration-700 rounded-full flex items-center justify-center;
 }
 
-/* Oryzo-style Typography Utilities */
+/* Typography Utilities */
 .font-editorial { font-family: var(--font-serif); }
 .font-kinetic { font-family: var(--font-title); }
 .font-typewriter { font-family: var(--font-mono); }
 .font-handwriting { font-family: var(--font-accent); }
 
-/* Liquid Shadows & Gradients */
+/* Premium UI Utilities */
 .glass-panel {
   @apply bg-white/5 backdrop-blur-xl border border-white/10;
+}
+
+.mask-fade-bottom {
+  mask-image: linear-gradient(to bottom, black 0%, black 80%, transparent 100%);
+}
+
+.mask-fade-right {
+  mask-image: linear-gradient(to right, black 0%, black 80%, transparent 100%);
+}
+
+.smooth-transition {
+  transition: all 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .liquid-bg {

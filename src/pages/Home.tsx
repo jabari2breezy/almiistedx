@@ -1,9 +1,12 @@
 import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'motion/react';
-import { ArrowUpRight, Clock, Hourglass, Watch, Timer, History, Zap } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import React, { useRef, useEffect, useState } from 'react';
 import Magnetic from '../components/Magnetic';
 import CharReveal from '../components/CharReveal';
+import MaskReveal from '../components/MaskReveal';
+import FloatingBackground from '../components/FloatingBackground';
+import { MechanicalClock, FluidBlob, KineticTypography } from '../components/ModernAnimation';
 
 const transition = { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] };
 
@@ -255,20 +258,41 @@ export default function Home() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      exit={{ opacity: 0 }}
-      className="pt-40"
+      exit={{ opacity: 0, transition: { duration: 0.5 } }}
+      className="relative pt-40"
       ref={containerRef}
     >
+      {/* High-End Scroll Progress Bar */}
+      <motion.div 
+        className="fixed top-0 left-0 right-0 h-[2px] bg-brand-secondary z-[100] origin-left"
+        style={{ scaleX: scrollYProgress }}
+      />
+
+      {/* Tiny Background Blur Layer as requested */}
+      <motion.div 
+        className="fixed inset-0 z-0 pointer-events-none backdrop-blur-[1px]"
+        style={{ opacity: useTransform(scrollYProgress, [0, 0.05], [0, 1]) }}
+      />
+      {/* Universal Floating Background */}
+      <FloatingBackground />
+
       {/* Hero Section */}
       <div className="px-6 md:px-16 py-20 min-h-[90vh] flex flex-col justify-center relative overflow-hidden">
-        {/* Parallax Time Icons */}
-        <ParallaxIcon icon={Clock} speed={0.05} left="10%" top="15%" size={200} />
-        <ParallaxIcon icon={Hourglass} speed={0.15} left="85%" top="5%" size={180} />
-        <ParallaxIcon icon={Watch} speed={-0.1} left="70%" top="60%" size={150} />
-        <ParallaxIcon icon={Timer} speed={0.08} left="5%" top="75%" size={220} />
-        <ParallaxIcon icon={History} speed={-0.05} left="40%" top="10%" size={120} />
-        <ParallaxIcon icon={Clock} speed={0.12} left="25%" top="85%" size={180} />
-        <ParallaxIcon icon={Hourglass} speed={-0.2} left="90%" top="40%" size={140} />
+        {/* Modern Mechanical Clock - Background */}
+        <MechanicalClock 
+          className="absolute right-[-10%] top-1/4 w-[50vw] h-[50vw] text-brand-primary pointer-events-none"
+        />
+
+        {/* Fluid Background Blob */}
+        <FluidBlob 
+          className="absolute left-[-20%] bottom-[-20%] w-[80vw] h-[80vw] text-brand-secondary pointer-events-none"
+        />
+
+        {/* Kinetic Typography - Foreground Layer */}
+        <KineticTypography 
+          text="BORROWED TIME" 
+          className="absolute top-1/4 left-0 w-full z-0 pointer-events-none"
+        />
 
         {/* Dynamic Background Elements with Parallax */}
         <motion.div 
@@ -302,16 +326,38 @@ export default function Home() {
               {eventStatus ? `${eventStatus.daysRemaining} DAYS REMAINING` : 'Event / 14th June 2026'}
             </motion.div>
             
-            <motion.h1 
-              variants={titleVariants}
-              className="text-[12vw] md:text-[10vw] font-title font-black tracking-tighter leading-[0.78] uppercase flex flex-col pt-8 text-brand-primary"
-            >
-              <CharReveal text="TEDx" delay={0.5} />
-              <div className="flex items-baseline gap-4">
-                <span className="italic font-editorial lowercase -ml-4 pr-4 text-brand-secondary">AlMuntazir</span>
-                <CharReveal text="2026" delay={0.8} />
-              </div>
-            </motion.h1>
+            <div className="pt-8 relative">
+              <MaskReveal delay={0.4} className="text-brand-primary">
+                <h1 className="text-[14vw] md:text-[12vw] font-title font-black tracking-tighter leading-[0.7] uppercase flex flex-col items-start">
+                  TED<span className="text-brand-secondary">x</span>
+                </h1>
+              </MaskReveal>
+              <MaskReveal delay={0.6} className="text-brand-primary">
+                <div className="flex flex-col -mt-4 md:-mt-8">
+                  <div className="text-[6vw] md:text-[4vw] font-title font-black tracking-tighter leading-none uppercase flex items-baseline gap-4">
+                    <span className="italic font-editorial lowercase text-brand-secondary">AlMuntazir</span>
+                    <span>Schools</span>
+                    <span className="text-brand-secondary">Youth</span>
+                  </div>
+                  <div className="text-[10vw] md:text-[8vw] font-title font-black tracking-tighter leading-none uppercase mt-2">
+                    2026
+                  </div>
+                </div>
+              </MaskReveal>
+
+{/* Premium Ticker Overlay */}
+<div className="absolute top-[35%] -right-20 rotate-90 origin-left hidden lg:block pointer-events-none">
+  <div className="marquee-container opacity-20">
+    <div className="marquee-content flex gap-8 whitespace-nowrap">
+      {[...Array(10)].map((_, i) => (
+        <span key={i} className="text-[10px] font-mono uppercase tracking-[1em] text-brand-primary">
+          Borrowed Time / 14.06.26 / Limited Assembly
+        </span>
+      ))}
+    </div>
+  </div>
+</div>
+            </div>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-end">
@@ -348,62 +394,13 @@ export default function Home() {
         </motion.div>
       </div>
 
-      {/* Latest Updates Section */}
-      <section className="px-6 md:px-16 py-20 border-t border-brand-outline bg-brand-surface/50 overflow-hidden">
-        <div className="max-w-screen-2xl mx-auto">
-          <div className="flex items-center justify-between mb-12">
-            <div className="flex items-center gap-4">
-              <Zap size={20} className="text-brand-secondary" />
-              <h3 className="font-typewriter text-[10px] uppercase tracking-[0.5em] text-brand-primary/40">Latest Updates</h3>
-            </div>
-            <div className="md:hidden font-typewriter text-[8px] uppercase tracking-widest text-brand-secondary border border-brand-secondary/30 px-3 py-1 rounded-full animate-pulse">
-              Swipe to explore
-            </div>
-          </div>
-          
-          <motion.div 
-            drag="x"
-            onDrag={handleDrag}
-            onDragStart={() => { lastDragPos.current = 0; hapticTick(); }}
-            dragConstraints={{ left: -600, right: 0 }}
-            dragElastic={0.2}
-            className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 min-w-max md:min-w-0"
-          >
-            {updates.length === 0 ? (
-                [1,2,3].map(i => <div key={i} className="w-[80vw] md:w-full h-40 bg-brand-outline/20 rounded-3xl animate-pulse" />)
-            ) : (
-              updates.map((update, idx) => (
-                <div key={update.id} className="w-[85vw] md:w-full h-full flex-shrink-0">
-                  <TiltCard>
-                    <motion.div 
-                      onPointerDown={hapticTick}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: idx * 0.1 }}
-                      className="bg-white p-8 rounded-3xl border border-brand-outline hover:border-brand-secondary/30 transition-colors h-full shadow-sm"
-                    >
-                      <span className="text-[10px] font-typewriter text-brand-secondary mb-4 block uppercase tracking-widest">{update.date}</span>
-                      <h4 className="font-title text-xl text-brand-primary mb-3 uppercase">{update.title}</h4>
-                      <p className="font-editorial text-lg text-brand-primary/60 italic leading-tight">{update.content}</p>
-                    </motion.div>
-                  </TiltCard>
-                </div>
-              ))
-            )}
-          </motion.div>
-        </div>
-      </section>
-
       {/* Manifest Section */}
       <section className="px-6 md:px-16 py-40 max-w-screen-2xl mx-auto border-t border-brand-outline relative overflow-hidden">
-        {/* Parallax Time Icons for Manifest section */}
-        <ParallaxIcon icon={Timer} speed={-0.12} left="80%" top="20%" size={250} />
-        <ParallaxIcon icon={Clock} speed={0.06} left="60%" top="70%" size={200} />
-        <ParallaxIcon icon={History} speed={0.18} left="15%" top="50%" size={180} />
-        <ParallaxIcon icon={Watch} speed={-0.08} left="35%" top="15%" size={130} />
+        <MechanicalClock 
+          className="absolute left-[-10%] bottom-[-10%] w-[60vw] h-[60vw] text-brand-secondary/40 pointer-events-none"
+        />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-32 items-start relative z-10">
+        <div className="max-w-4xl relative z-10">
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -411,53 +408,14 @@ export default function Home() {
             className="space-y-12"
           >
             <h2 className="text-7xl md:text-9xl font-title font-black leading-[0.8] uppercase text-brand-primary">
-              The <br /><span className="text-brand-secondary italic lowercase">Horizons.</span>
+              <MaskReveal delay={0.2}>The</MaskReveal>
+              <MaskReveal delay={0.4} className="text-brand-secondary italic lowercase">Horizons.</MaskReveal>
             </h2>
             <p className="font-sans text-2xl text-brand-primary/80 leading-relaxed max-w-xl">
               This theme explores the idea that the time we have individually and collectively is limited, and what we choose to do with it matters. 
               Inviting conversations on the systems, choices and moments that shape our world.
             </p>
           </motion.div>
-          
-          <div className="flex md:flex-col overflow-x-auto md:overflow-visible pb-8 md:pb-0 gap-8 min-w-max md:min-w-0 md:space-y-12 no-scrollbar">
-            {[
-              { 
-                title: 'Preserving the Past', 
-                sub: 'Heritage', 
-                text: 'The debt we inherited from history. Understanding the foundations that shape our current reality.' 
-              },
-              { 
-                title: 'Fixing the Present', 
-                sub: 'Urgency', 
-                text: 'The only moment we actually have. Using the present to address the challenges of our time.' 
-              },
-              { 
-                title: 'Reimagining a Future', 
-                sub: 'Legacy', 
-                text: 'The worlds we will never inhabit. Defining our responsibility for the generations to come.' 
-              }
-            ].map((item, i) => (
-              <div key={item.title} className="w-[85vw] md:w-full flex-shrink-0">
-                <TiltCard>
-                  <motion.div 
-                    onClick={hapticTick}
-                    className="p-10 border border-brand-outline rounded-3xl hover:border-brand-secondary transition-all group bg-white/80 backdrop-blur-sm shadow-sm"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                  >
-                    <div className="flex justify-between items-start mb-6">
-                      <span className="font-typewriter text-[10px] text-brand-secondary uppercase tracking-[0.4em]">Unit_0{i+1}</span>
-                      <span className="font-editorial text-sm italic text-brand-primary/30 uppercase">{item.sub}</span>
-                    </div>
-                    <h4 className="font-title text-3xl uppercase text-brand-primary mb-4">{item.title}</h4>
-                    <p className="font-editorial text-xl text-brand-primary/60 italic leading-tight group-hover:text-brand-primary transition-colors">{item.text}</p>
-                  </motion.div>
-                </TiltCard>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 

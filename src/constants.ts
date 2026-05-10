@@ -98,7 +98,7 @@ export const SPEAKERS: Speaker[] = [
     id: '6',
     name: 'Sada Mbaruk Said',
     topic: 'Three Clocks: Climate, Animals, AI',
-    bio: 'Syncing the disparate timelines of technology, ecology, and biological survival.',
+    bio: "Sada explores the concept of 'slow destruction,' challenging the notion of a sudden global catastrophe in favor of a more insidious reality: the gradual unraveling of our world through the small, everyday choices we often ignore. By examining the interconnected chain of conflict, societal collapse, and environmental decay, she reveals how seemingly isolated issues feed into a larger systemic crisis. Her talk serves as a powerful reminder that the true danger lies not in a single disaster, but in the millions of moments where we choose not to care, urging us to recognize our collective responsibility before the damage becomes irreversible.",
     image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=600&h=800',
     segmentId: 'future'
   }

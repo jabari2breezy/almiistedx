@@ -3,28 +3,32 @@ import { motion, AnimatePresence } from 'motion/react';
 import { SEGMENTS } from '../constants';
 import { Search, Plus, X, ArrowUpRight } from 'lucide-react';
 import Magnetic from '../components/Magnetic';
+import MaskReveal from '../components/MaskReveal';
+import PerspectiveCard from '../components/PerspectiveCard';
+import { MechanicalClock, ModernSandglass, DigitalNetwork } from '../components/ModernAnimation';
 
-const transition = { duration: 0.6, ease: [0.22, 1, 0.36, 1] };
+const transition = { duration: 1.2, ease: [0.76, 0, 0.24, 1] };
 
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.05
+      staggerChildren: 0.1,
+      delayChildren: 0.2
     }
   }
 };
 
 const speakerVariants = {
-  hidden: { opacity: 0, scale: 0.95, y: 30 },
+  hidden: { opacity: 0, x: -10, y: 40 },
   visible: { 
     opacity: 1, 
-    scale: 1, 
+    x: 0, 
     y: 0,
     transition: { 
-      duration: 0.8, 
-      ease: [0.16, 1, 0.3, 1] 
+      duration: 1.4, 
+      ease: [0.22, 1, 0.36, 1] 
     }
   }
 };
@@ -89,14 +93,51 @@ export default function Speakers() {
           >
             <div className="font-typewriter text-[10px] text-brand-secondary tracking-[1em] uppercase mb-12">The Guest List</div>
             <h1 className="text-8xl md:text-[12vw] font-title font-black tracking-tighter leading-[0.75] uppercase flex flex-col text-brand-primary">
-              <span>The</span>
-              <span className="italic font-editorial lowercase -ml-6 text-brand-secondary">Assembly.</span>
+              <MaskReveal delay={0.2}>The</MaskReveal>
+              <MaskReveal delay={0.4} className="italic font-editorial lowercase -ml-6 text-brand-secondary">Assembly.</MaskReveal>
             </h1>
           </motion.div>
           <div className="max-w-xs font-editorial text-2xl text-brand-primary/40 italic leading-tight">
             Meet the people asking: What are you doing with the time you’ve got?
           </div>
         </header>
+        
+        {/* Featured 3D Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-32">
+          {speakersData.slice(0, 3).map((speaker, i) => (
+            <motion.div 
+              key={`featured-${speaker.id}`}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 + i * 0.1, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <PerspectiveCard className="group cursor-none">
+                <div 
+                  className="aspect-[3/4] rounded-[2rem] bg-brand-primary overflow-hidden relative border border-white/10"
+                  onClick={() => setSelectedSpeaker(speaker)}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-primary via-transparent to-transparent z-10 opacity-60" />
+                  <div className="absolute inset-0 flex flex-col justify-end p-8 z-20">
+                    <span className="font-typewriter text-[9px] text-brand-secondary tracking-[0.4em] uppercase mb-2">Featured / 0{i+1}</span>
+                    <h3 className="text-3xl font-title font-black uppercase text-white leading-none mb-1">{speaker.name}</h3>
+                    <p className="font-editorial text-white/50 italic text-sm truncate">{speaker.topic}</p>
+                    
+                    <div className="absolute top-8 right-8 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white scale-0 group-hover:scale-100 transition-transform duration-500">
+                      <ArrowUpRight size={20} />
+                    </div>
+                  </div>
+                  
+                  {/* Visual Background Decoration */}
+                  <div className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity duration-700">
+                    {speaker.segmentId === 'past' && <MechanicalClock className="w-full h-full text-white p-12" />}
+                    {speaker.segmentId === 'present' && <ModernSandglass className="w-full h-full text-white p-12" />}
+                    {speaker.segmentId === 'future' && <DigitalNetwork className="w-full h-full text-white p-12" />}
+                  </div>
+                </div>
+              </PerspectiveCard>
+            </motion.div>
+          ))}
+        </div>
 
         {/* Dynamic Filter / Search */}
         <div className="flex flex-col lg:flex-row gap-12 mb-20 border-y border-brand-outline py-12">
@@ -152,22 +193,29 @@ export default function Speakers() {
                   layout
                   variants={speakerVariants}
                   exit={{ opacity: 0, y: -20 }}
-                  className="group relative grid grid-cols-1 md:grid-cols-12 gap-8 py-16 border-b border-brand-outline hover:bg-brand-surface transition-colors px-6 -mx-6 rounded-[2rem] items-center"
+                  className="group relative grid grid-cols-1 md:grid-cols-12 gap-8 py-16 border-b border-brand-outline hover:bg-brand-surface transition-colors px-6 -mx-6 rounded-[2rem] items-center overflow-hidden"
                 >
-                <div className="md:col-span-1 font-typewriter text-[11px] text-brand-primary/20 group-hover:text-brand-secondary transition-colors">
+                  {/* Subtle Background Animation on Hover */}
+                  <div className="absolute inset-0 z-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none">
+                    {speaker.segmentId === 'past' && <MechanicalClock className="w-full h-full scale-150 translate-x-1/2" />}
+                    {speaker.segmentId === 'present' && <ModernSandglass className="w-full h-full scale-150 -translate-x-1/4" />}
+                    {speaker.segmentId === 'future' && <DigitalNetwork className="w-full h-full scale-110" />}
+                  </div>
+
+                <div className="md:col-span-1 font-typewriter text-[11px] text-brand-primary/20 group-hover:text-brand-secondary transition-colors relative z-10">
                   0{i + 1}
                 </div>
-                <div className="md:col-span-5">
+                <div className="md:col-span-5 relative z-10">
                   <h3 className="text-4xl md:text-6xl font-title font-black tracking-tighter text-brand-primary group-hover:pl-4 transition-all duration-500 uppercase">
                     {speaker.name}
                   </h3>
                 </div>
-                <div className="md:col-span-5 pb-4 md:pb-0">
+                <div className="md:col-span-5 pb-4 md:pb-0 relative z-10">
                   <p className="font-editorial text-2xl md:text-3xl text-brand-primary/40 italic leading-tight group-hover:text-brand-primary transition-colors">
                     "{speaker.topic}"
                   </p>
                 </div>
-                <div className="md:col-span-1 flex justify-end">
+                <div className="md:col-span-1 flex justify-end relative z-10">
                   <Magnetic strength={0.4}>
                     <button 
                       onClick={() => {
@@ -214,7 +262,15 @@ export default function Speakers() {
                 <X size={24} />
               </button>
 
-              <div className="w-full p-10 md:p-16 pt-16 overflow-y-auto custom-scrollbar bg-white">
+              <div className="w-full md:w-1/3 h-full bg-brand-surface relative flex items-center justify-center p-12 overflow-hidden">
+                {selectedSpeaker.segmentId === 'past' && <MechanicalClock className="w-full h-full text-brand-primary" />}
+                {selectedSpeaker.segmentId === 'present' && <ModernSandglass className="w-full h-full text-brand-secondary" />}
+                {selectedSpeaker.segmentId === 'future' && <DigitalNetwork className="w-full h-full text-brand-primary" />}
+                
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-surface via-transparent to-transparent opacity-80" />
+              </div>
+
+              <div className="w-full md:w-2/3 p-10 md:p-16 pt-16 overflow-y-auto custom-scrollbar bg-white">
                 <div className="w-12 h-1.5 bg-brand-outline/40 rounded-full mx-auto mb-8 md:hidden" />
                 <span className="font-typewriter text-xs text-brand-secondary uppercase tracking-[0.4em] mb-4 block">
                   {SEGMENTS.find(s => s.id === selectedSpeaker.segmentId)?.title || 'Speaker'}

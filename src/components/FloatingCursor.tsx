@@ -1,26 +1,56 @@
 import { useEffect, useState } from 'react';
-import { motion, useSpring, useMotionValue } from 'motion/react';
+import { motion, useSpring, useMotionValue, AnimatePresence } from 'motion/react';
 
 export default function FloatingCursor() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const [isHovering, setIsHovering] = useState(false);
+  const [hoverType, setHoverType] = useState<'default' | 'button' | 'text' | 'card'>('default');
+  const [magneticPos, setMagneticPos] = useState({ x: 0, y: 0, active: false });
 
-  const springConfig = { damping: 25, stiffness: 150, mass: 0.5 };
+  const springConfig = { damping: 40, stiffness: 250, mass: 0.8 };
   const smoothX = useSpring(mouseX, springConfig);
   const smoothY = useSpring(mouseY, springConfig);
+  
+  // Refined Spring for the ring size and scale
+  const ringScale = useSpring(1, { damping: 20, stiffness: 100 });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const interactive = target.closest('button, a, .interactive');
+      const card = target.closest('.group');
+      
+      if (card && !interactive) {
+        setHoverType('card');
+        setMagneticPos({ x: 0, y: 0, active: false });
+        ringScale.set(2.5);
+      } else if (interactive) {
+        const rect = interactive.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        const dist = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+        if (dist < 50) {
+          setMagneticPos({ x: centerX, y: centerY, active: true });
+          setHoverType('button');
+          ringScale.set(1.5);
+        } else {
+          setMagneticPos({ x: 0, y: 0, active: false });
+          setHoverType('button');
+          ringScale.set(1.2);
+        }
+      } else if (target.closest('h1, h2, h3, p')) {
+        setHoverType('text');
+        setMagneticPos({ x: 0, y: 0, active: false });
+        ringScale.set(hoverType === 'text' ? 2.5 : 3);
+      } else {
+        setHoverType('default');
+        setMagneticPos({ x: 0, y: 0, active: false });
+        ringScale.set(1);
+      }
+
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
-
-      const target = e.target as HTMLElement;
-      setIsHovering(
-        !!target.closest('button') || 
-        !!target.closest('a') || 
-        target.classList.contains('interactive')
-      );
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -29,33 +59,45 @@ export default function FloatingCursor() {
 
   return (
     <>
-      {/* Central Dot */}
       <motion.div
-        className="fixed top-0 left-0 w-1.5 h-1.5 bg-brand-secondary rounded-full pointer-events-none z-[300] hidden md:block"
+        className="fixed top-0 left-0 w-1 h-1 bg-brand-secondary rounded-full pointer-events-none z-[400] hidden md:block"
         style={{
-          x: mouseX,
-          y: mouseY,
+          x: magneticPos.active ? magneticPos.x : mouseX,
+          y: magneticPos.active ? magneticPos.y : mouseY,
           translateX: '-50%',
           translateY: '-50%',
         }}
       />
-      {/* Elastic Trailing Ring */}
       <motion.div
-        className="fixed top-0 left-0 rounded-full border border-brand-secondary/30 pointer-events-none z-[300] hidden md:block"
+        className="fixed top-0 left-0 rounded-full border border-brand-secondary/30 pointer-events-none z-[400] hidden md:block mix-blend-difference flex items-center justify-center overflow-hidden"
+        style={{
+          x: magneticPos.active ? magneticPos.x : smoothX,
+          y: magneticPos.active ? magneticPos.y : smoothY,
+          scale: ringScale,
+          translateX: '-50%',
+          translateY: '-50%',
+          width: 40,
+          height: 40,
+        }}
         animate={{ 
-          width: isHovering ? 60 : 32, 
-          height: isHovering ? 60 : 32,
-          borderWidth: isHovering ? 1 : 1,
-          borderColor: isHovering ? 'rgba(0, 168, 89, 0.8)' : 'rgba(0, 168, 89, 0.3)'
+          backgroundColor: hoverType === 'text' ? 'rgba(255, 255, 255, 1)' : (hoverType === 'card' ? 'rgba(0, 168, 89, 1)' : 'rgba(255, 255, 255, 0)'),
+          borderColor: hoverType === 'button' ? 'rgba(0, 168, 89, 1)' : 'rgba(0, 168, 89, 0.3)',
         }}
-        style={{
-          x: smoothX,
-          y: smoothY,
-          translateX: '-50%',
-          translateY: '-50%',
-        }}
-        transition={{ type: 'spring', damping: 20, stiffness: 100 }}
-      />
+        transition={{ type: 'spring', damping: 25, stiffness: 150 }}
+      >
+        <AnimatePresence>
+          {hoverType === 'card' && (
+            <motion.span
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.5 }}
+              className="text-[4px] font-black uppercase tracking-widest text-white"
+            >
+              View
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </>
   );
 }

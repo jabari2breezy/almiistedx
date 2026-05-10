@@ -38,19 +38,27 @@ export default function Navbar() {
         </div>
 
         {/* Navbar Pill - Desktop */}
-        <div className="hidden md:flex items-center bg-brand-primary/5 backdrop-blur-md rounded-full p-1 border border-brand-primary/10">
+        <div className="hidden md:flex items-center bg-white/40 backdrop-blur-xl rounded-full p-1 border border-brand-primary/5 shadow-[0_8px_32px_rgba(0,43,91,0.05)]">
           {[
             { name: 'Home', href: '/' },
             { name: 'Theme', href: '/theme' },
             { name: 'Speakers', href: '/speakers' },
+            { name: 'About', href: '/about' },
           ].map((item) => (
             <Link 
               key={item.href}
               to={item.href}
-              className={`px-6 py-2 rounded-full text-[10px] font-typewriter uppercase tracking-[0.2em] transition-all hover:text-brand-secondary ${
-                location.pathname === item.href ? 'bg-brand-secondary text-white shadow-sm' : 'text-brand-primary/60'
+              className={`px-8 py-2.5 rounded-full text-[10px] font-sans font-semibold uppercase tracking-[0.25em] transition-all duration-500 relative ${
+                location.pathname === item.href ? 'text-white' : 'text-brand-primary/60 hover:text-brand-primary'
               }`}
             >
+              {location.pathname === item.href && (
+                <motion.div 
+                  layoutId="nav-glow"
+                  className="absolute inset-0 bg-brand-primary rounded-full z-[-1]"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
               {item.name}
             </Link>
           ))}
