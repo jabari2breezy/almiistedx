@@ -14,7 +14,7 @@ export default function CharReveal({ text, className = "", delay = 0 }: CharReve
     hidden: { opacity: 0 },
     visible: (i: number = 1) => ({
       opacity: 1,
-      transition: { staggerChildren: 0.03, delayChildren: 0.02 * i + delay },
+      transition: { staggerChildren: 0.015, delayChildren: 0.01 * i + delay },
     }),
   };
 

@@ -25,7 +25,7 @@ export default function MaskReveal({ children, delay = 0, direction = 'up', clas
       opacity: 1,
       transition: {
         delay,
-        duration: 2.2,
+        duration: 0.3,
         ease: [0.16, 1, 0.3, 1]
       }
     }

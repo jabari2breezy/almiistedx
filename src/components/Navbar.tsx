@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from './Logo';
+import { SOCIALS } from '../constants';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -160,8 +161,8 @@ export default function Navbar() {
                 )}
               </div>
               <div className="flex gap-16 font-typewriter text-[10px] tracking-[0.5em] uppercase">
-                <a href="https://instagram.com/almuntazirschool" target="_blank" rel="noopener noreferrer" className="hover:text-brand-secondary transition-colors">Instagram</a>
-                <a href="mailto:tedxalmuntazirschoolsyouth@gmail.com" className="hover:text-brand-secondary transition-colors">Inquiries</a>
+                <a href={SOCIALS.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-brand-secondary transition-colors">Instagram</a>
+                <a href={`mailto:${SOCIALS.email}`} className="hover:text-brand-secondary transition-colors">Inquiries</a>
               </div>
             </div>
           </motion.div>

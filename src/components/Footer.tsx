@@ -4,7 +4,7 @@ import Logo from './Logo';
 
 export default function Footer() {
   return (
-    <footer className="px-6 md:px-16 py-24 border-t border-brand-outline relative overflow-hidden bg-white">
+    <footer className="px-6 md:px-16 py-8 border-t border-brand-outline relative overflow-hidden bg-white">
       {/* Liquid Hint */}
       <div className="absolute bottom-0 right-0 w-96 h-96 liquid-bg opacity-10 blur-3xl pointer-events-none" />
       

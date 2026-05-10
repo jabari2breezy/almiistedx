@@ -49,8 +49,8 @@ export const SEGMENTS: Segment[] = [
 ];
 
 export const SOCIALS = {
-  instagram: 'https://instagram.com/almuntazirschool',
-  email: 'mailto:tedxalmuntazirschoolsyouth@gmail.com'
+  instagram: 'https://instagram.com/almuntazirschools',
+  email: 'tedxalmuntazirschoolsyouth@gmail.com'
 };
 
 export const SPEAKERS: Speaker[] = [

@@ -3,7 +3,7 @@ import { Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import React, { useRef, useEffect, useState } from 'react';
 import Magnetic from '../components/Magnetic';
-import CharReveal from '../components/CharReveal';
+import Typewriter from '../components/Typewriter';
 import MaskReveal from '../components/MaskReveal';
 import FloatingBackground from '../components/FloatingBackground';
 import { MechanicalClock, FluidBlob, KineticTypography } from '../components/ModernAnimation';
@@ -26,7 +26,7 @@ const itemVariants = {
   visible: { 
     opacity: 1, 
     y: 0,
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] }
   }
 };
 
@@ -36,7 +36,7 @@ const titleVariants = {
     opacity: 1, 
     y: 0,
     transition: { 
-      duration: 1.2, 
+      duration: 0.7, 
       ease: [0.16, 1, 0.3, 1]
     }
   }
@@ -259,7 +259,7 @@ export default function Home() {
       initial="hidden"
       animate="visible"
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
-      className="relative pt-40"
+      className="relative pt-4"
       ref={containerRef}
     >
       {/* High-End Scroll Progress Bar */}
@@ -277,7 +277,7 @@ export default function Home() {
       <FloatingBackground />
 
       {/* Hero Section */}
-      <div className="px-6 md:px-16 py-20 min-h-[90vh] flex flex-col justify-center relative overflow-hidden">
+      <div className="px-6 md:px-16 py-4 pb-8 flex flex-col relative overflow-hidden">
         {/* Modern Mechanical Clock - Background */}
         <MechanicalClock 
           className="absolute right-[-10%] top-1/4 w-[50vw] h-[50vw] text-brand-primary pointer-events-none"
@@ -307,7 +307,7 @@ export default function Home() {
         >
           <span className="text-[40vw] font-title font-black text-brand-primary leading-none">X</span>
         </motion.div>
-
+ 
         <motion.div 
           style={{ y: circleY }}
           className="absolute top-1/2 left-1/4 w-96 h-96 border border-brand-secondary/10 rounded-full pointer-events-none"
@@ -317,7 +317,7 @@ export default function Home() {
           style={{ scale: heroScale, opacity: heroOpacity, rotateX: heroRotate, y: heroY }}
           className="max-w-screen-2xl mx-auto w-full relative z-10"
         >
-          <motion.div style={{ opacity: textOpacity }} className="flex flex-col gap-2 mb-20">
+          <motion.div style={{ opacity: textOpacity }} className="flex flex-col gap-2 mb-4">
             <motion.div
               variants={itemVariants}
               className="flex items-center gap-6 text-brand-secondary font-typewriter text-[10px] uppercase tracking-[0.8em]"
@@ -326,7 +326,7 @@ export default function Home() {
               {eventStatus ? `${eventStatus.daysRemaining} DAYS REMAINING` : 'Event / 14th June 2026'}
             </motion.div>
             
-            <div className="pt-8 relative">
+            <div className="pt-2 relative">
               <MaskReveal delay={0.4} className="text-brand-primary">
                 <h1 className="text-[14vw] md:text-[12vw] font-title font-black tracking-tighter leading-[0.7] uppercase flex flex-col items-start">
                   TED<span className="text-brand-secondary">x</span>
@@ -360,26 +360,28 @@ export default function Home() {
             </div>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-end">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mt-6">
             <motion.div 
-              className="md:col-span-8 lg:col-span-7"
+              className="md:col-span-12 lg:col-span-7"
               variants={itemVariants}
             >
-            <p className="font-editorial text-3xl md:text-5xl text-brand-primary leading-[1.1] italic">
-                <CharReveal text="We're living on" delay={1} className="inline-block" /> <span className="text-brand-secondary font-title not-italic uppercase">Borrowed Time</span>. 
-              </p>
-              <p className="mt-8 font-sans text-xl text-brand-primary/70 max-w-3xl leading-relaxed">
-                <CharReveal text="This theme explores the idea that the time we have individually and collectively is limited, and what we choose to do with it matters. Inviting conversations on the systems, choices and moments that shape our world, whether that means preserving the past, fixing the present or reimagining a new future." delay={1.2} />
+            <div className="font-editorial text-3xl md:text-5xl text-brand-primary leading-[1.1] italic">
+                <Typewriter text="We're living on" delay={0.5} speed={10} className="inline-block" /> <span className="text-brand-secondary font-title not-italic uppercase">Borrowed Time</span>. 
+              </div>
+              <p className="mt-8 font-sans text-xl text-brand-primary/70 max-w-4xl leading-relaxed">
+                <Typewriter text="This theme explores the idea that the time we have individually and collectively is limited, and what we choose to do with it matters. Inviting conversations on the systems, choices and moments that shape our world, whether that means preserving the past, fixing the present or reimagining a new future." delay={0.8} speed={5} />
               </p>
             </motion.div>
 
             <motion.div
-              className="md:col-start-9 md:col-span-4 flex flex-col gap-8"
+              className="md:col-span-12 lg:col-span-5 flex flex-col gap-8 lg:text-right lg:items-end"
               variants={itemVariants}
             >
-              <div className="flex flex-col gap-2 font-typewriter text-[10px] uppercase tracking-[0.4em] text-brand-primary/40">
-                <span>Location</span>
-                <span className="text-brand-primary font-bold">ALMUNTAZIR ISLAMIC INTERNATIONAL SCHOOL - Nursery Campus</span>
+              <div className="flex flex-col gap-3 font-typewriter text-[12px] uppercase tracking-[0.3em] text-brand-primary w-full">
+                <span className="opacity-40">Location</span>
+                <span className="text-brand-secondary font-black border-l-2 lg:border-l-0 lg:border-r-2 border-brand-secondary pl-4 lg:pl-0 lg:pr-4 py-1 leading-relaxed break-words">
+                  ALMUNTAZIR ISLAMIC INTERNATIONAL SCHOOLS - Nursery Campus
+                </span>
               </div>
 
               {/* Status Indicator */}
@@ -393,31 +395,6 @@ export default function Home() {
           </div>
         </motion.div>
       </div>
-
-      {/* Manifest Section */}
-      <section className="px-6 md:px-16 py-40 max-w-screen-2xl mx-auto border-t border-brand-outline relative overflow-hidden">
-        <MechanicalClock 
-          className="absolute left-[-10%] bottom-[-10%] w-[60vw] h-[60vw] text-brand-secondary/40 pointer-events-none"
-        />
-
-        <div className="max-w-4xl relative z-10">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="space-y-12"
-          >
-            <h2 className="text-7xl md:text-9xl font-title font-black leading-[0.8] uppercase text-brand-primary">
-              <MaskReveal delay={0.2}>The</MaskReveal>
-              <MaskReveal delay={0.4} className="text-brand-secondary italic lowercase">Horizons.</MaskReveal>
-            </h2>
-            <p className="font-sans text-2xl text-brand-primary/80 leading-relaxed max-w-xl">
-              This theme explores the idea that the time we have individually and collectively is limited, and what we choose to do with it matters. 
-              Inviting conversations on the systems, choices and moments that shape our world.
-            </p>
-          </motion.div>
-        </div>
-      </section>
 
     </motion.div>
   );
