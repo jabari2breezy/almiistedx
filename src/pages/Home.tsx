@@ -8,6 +8,7 @@ import MaskReveal from '../components/MaskReveal';
 import FloatingBackground from '../components/FloatingBackground';
 import { MechanicalClock, FluidBlob, KineticTypography } from '../components/ModernAnimation';
 import HeroParticles from '../components/HeroParticles';
+import Countdown from '../components/Countdown';
 
 const transition = { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] };
 
@@ -227,6 +228,8 @@ export default function Home() {
   const charX = useTransform(smoothProgress, [0, 1], ["0%", "5%"]);
   const circleY = useTransform(smoothProgress, [0, 1], ["0%", "-10%"]);
   const textOpacity = useTransform(smoothProgress, [0, 0.5], [1, 1]);
+  const heroSlideY = useTransform(smoothProgress, [0, 0.3], [0, -100]);
+  const hourglassBottom = useTransform(smoothProgress, [0, 1], ["0%", "100%"]);
 
   useEffect(() => {
     fetch('/api/event-status')
@@ -278,119 +281,84 @@ export default function Home() {
       <FloatingBackground />
 
       {/* Hero Section */}
-      <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#E8F5EE]">
-        <HeroParticles />
+      <div className="min-h-screen flex flex-col relative overflow-hidden bg-brand-primary text-white">
+        <div className="absolute inset-0 z-0">
+          <HeroParticles />
+          <div className="absolute inset-0 bg-gradient-to-b from-brand-primary/80 via-brand-primary/40 to-brand-primary" />
+        </div>
+        
         {/* Large Decorative "X" Background */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-[0.03] select-none">
-          <span className="text-[80vw] font-title font-black text-brand-primary leading-none">X</span>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-[0.05] select-none">
+          <span className="text-[100vw] font-title font-black text-white leading-none">X</span>
         </div>
 
-        <div className="flex-1 w-full max-w-screen-2xl mx-auto px-6 md:px-16 pt-32 pb-16 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-0">
-          {/* Left Column */}
-          <div className="flex flex-col justify-between h-full py-12">
-            <motion.div
-              variants={itemVariants}
-              className="flex items-center gap-4 text-brand-primary font-bold font-sans text-[10px] md:text-[12px] uppercase tracking-[0.3em] mb-8"
-            >
-              <div className="w-12 h-[2px] bg-brand-primary" />
-              <span>TEDX ALMUNTAZIR SCHOOLS YOUTH · 2026</span>
-            </motion.div>
+        <div className="flex-1 w-full max-w-screen-2xl mx-auto px-6 md:px-16 pt-40 pb-20 relative z-10 flex flex-col justify-center items-center text-center">
+          <motion.div
+            variants={titleVariants}
+            className="max-w-7xl mb-12"
+          >
+            <h1 className="text-[12vw] md:text-[8vw] font-title font-black leading-[0.8] tracking-tighter uppercase text-white">
+              TEDX ALMUNTAZIR <br />
+              <span className="text-brand-secondary">SCHOOLS YOUTH</span> <br />
+              <span className="opacity-40">2026</span>
+            </h1>
+          </motion.div>
 
-            <motion.div variants={titleVariants} className="max-w-xl">
-              <h1 className="text-[12vw] lg:text-[7vw] font-title font-black leading-[0.85] mb-10 group tracking-tighter">
-                <span className="block text-brand-primary italic font-editorial lowercase opacity-90 -ml-1 mb-2">We're living on|</span>
-                <span className="block text-brand-secondary">BORROWED</span>
-                <span className="block text-brand-secondary">TIME.</span>
-              </h1>
-              
-              <p className="font-sans text-xl md:text-2xl text-brand-primary/80 max-w-lg leading-relaxed mb-12">
-                The time we have is limited, and what we choose to do with it matters. Join us for a day of reimagining systems, challenging assumptions, and seizing the future.
-              </p>
-            </motion.div>
+          <motion.div 
+            variants={itemVariants} 
+            className="max-w-3xl mb-16"
+          >
+             <p className="font-editorial text-3xl md:text-4xl text-white/60 italic leading-[1.1]">
+               We're living on <span className="text-white">BORROWED TIME.</span>
+             </p>
+          </motion.div>
 
-            <motion.div variants={itemVariants} className="mt-auto">
-              <div className="inline-flex items-center gap-4 px-8 py-5 bg-white/40 border border-white/60 rounded-2xl backdrop-blur-md shadow-sm">
-                <div className="w-10 h-10 rounded-full bg-brand-secondary/20 flex items-center justify-center text-brand-secondary">
-                  <Clock size={18} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-sans font-bold text-brand-primary text-sm">
-                    Event Date: June 14, 2026
-                  </span>
-                  <span className="font-typewriter text-[10px] uppercase tracking-widest text-brand-primary/40">
-                    Nursery Campus, Dar es Salaam
-                  </span>
-                </div>
+          <motion.div variants={itemVariants} className="mb-20">
+            <Countdown />
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="flex flex-col md:flex-row gap-8 items-center">
+            <Link to="/theme" className="group flex items-center gap-4 font-typewriter text-[11px] uppercase tracking-[0.4em] text-white hover:text-brand-secondary transition-colors">
+              Explore the Theme
+              <div className="w-12 h-[1px] bg-white/20 group-hover:bg-brand-secondary group-hover:w-16 transition-all" />
+            </Link>
+          </motion.div>
+        </div>
+
+        {/* Bottom Bar Info */}
+        <div className="w-full border-t border-white/5 py-12 px-6 md:px-16 relative z-10 bg-brand-primary">
+          <div className="max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+            <div className="flex gap-16 items-center">
+              <div className="space-y-1">
+                <span className="block font-typewriter text-[9px] uppercase tracking-widest text-white/30">The Date</span>
+                <span className="block font-sans font-bold text-white text-lg">JUNE 14, 2026</span>
               </div>
-            </motion.div>
-          </div>
-
-          {/* Right Column */}
-          <div className="lg:border-l lg:border-brand-primary/10 lg:pl-16 flex flex-col justify-between h-full py-12 relative">
-            <div className="space-y-12">
-              <motion.div variants={itemVariants} className="space-y-4">
-                <span className="font-typewriter text-[11px] uppercase tracking-[0.5em] text-brand-primary/40">The Venue</span>
-                <div className="space-y-2">
-                  <h2 className="text-4xl md:text-5xl font-title font-black text-brand-primary leading-tight uppercase">
-                    ALMUNTAZIR ISLAMIC<br />INTERNATIONAL SCHOOLS
-                  </h2>
-                  <p className="font-sans text-2xl font-bold text-brand-secondary uppercase tracking-wider">
-                    Nursery Campus
-                  </p>
-                </div>
-              </motion.div>
-
-              <div className="w-full h-[1px] bg-brand-primary/10" />
-
-              <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 gap-12 pt-4">
-                <div className="space-y-2">
-                  <span className="text-6xl font-title font-black text-brand-primary">8+</span>
-                  <p className="font-typewriter text-xs uppercase tracking-widest text-brand-primary/60">Speakers</p>
-                </div>
-                <div className="space-y-2">
-                  <span className="text-6xl font-title font-black text-brand-primary">1 Day</span>
-                  <p className="font-typewriter text-xs uppercase tracking-widest text-brand-primary/60">OF IDEAS WORTH SPREADING</p>
-                </div>
-              </motion.div>
+              <div className="flex-shrink-0 w-[1px] h-10 bg-white/10" />
+              <div className="space-y-1">
+                <span className="block font-typewriter text-[9px] uppercase tracking-widest text-white/30">The Venue</span>
+                <span className="block font-sans font-bold text-white text-lg uppercase">Nursery Campus, Upanga</span>
+              </div>
             </div>
 
-            <motion.div variants={itemVariants} className="mt-20 lg:mt-auto">
-              <div className="w-full h-[1px] bg-brand-primary/10 mb-12 hidden lg:block" />
-              <Link to="/about#contact" className="group relative block w-full">
-                <button className="w-full py-8 md:py-10 bg-white/40 backdrop-blur-md rounded-[2rem] border border-white/60 flex items-center justify-center gap-6 group-hover:bg-brand-primary transition-all duration-500 shadow-xl shadow-brand-primary/5">
-                  <span className="font-title text-2xl md:text-3xl font-black uppercase text-brand-primary group-hover:text-white transition-colors tracking-tight">
-                    RESERVE YOUR SEAT
-                  </span>
-                  <div className="w-12 h-12 rounded-full border border-brand-primary/20 flex items-center justify-center group-hover:border-white/40 group-hover:bg-white/10 transition-all">
-                    <motion.div
-                      animate={{ x: [0, 5, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    >
-                      <Plus className="rotate-45 text-brand-primary group-hover:text-white" />
-                    </motion.div>
-                  </div>
-                </button>
-              </Link>
-            </motion.div>
+            <div className="flex gap-12 items-center opacity-40">
+              <div className="text-right">
+                <span className="block font-typewriter text-[9px] uppercase tracking-widest">8+ Speakers</span>
+                <span className="block font-typewriter text-[9px] uppercase tracking-widest">1 Inspiring Day</span>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Bottom Scroll Indicator */}
+      {/* Hourglass Scroll Interaction Indicator */}
+      <div className="fixed right-8 top-1/2 -translate-y-1/2 h-40 w-1 bg-white/5 z-[60] hidden xl:block overflow-hidden rounded-full">
         <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
-        >
-          <div className="w-12 h-12 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary">
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <Plus className="rotate-45" />
-            </motion.div>
-          </div>
-        </motion.div>
+          className="w-full bg-brand-secondary origin-top"
+          style={{ height: hourglassBottom }}
+        />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 font-typewriter text-[8px] uppercase tracking-widest text-white/20 vertical-text -translate-y-12">
+          Time Spent
+        </div>
       </div>
 
       {/* Marquee Ticker */}
@@ -400,107 +368,24 @@ export default function Home() {
             <div key={i} className="flex gap-12 shrink-0 animate-marquee text-[10px] font-typewriter uppercase tracking-[0.5em] text-white items-center">
               <span>ANAYA RASHID · THE CULTURE OF TIME</span>
               <span className="w-2 h-2 rounded-full bg-brand-secondary" />
-              <span>ZAHRA DATOO · CHRONOS & KAIROS</span>
+              <span>ZAHRA DATOO · ARCHITECTURE OF NOSTALGIA</span>
               <span className="w-2 h-2 rounded-full bg-brand-secondary" />
-              <span>MUSTAFA ABBAS · FUTURE PROOFING</span>
+              <span>HASSAN ABBAS · THE PROCRASTINATION PARADOX</span>
+              <span className="w-2 h-2 rounded-full bg-brand-secondary" />
+              <span>ZAHRA MOLEDINA · CAPITALISM'S CLOCK</span>
+              <span className="w-2 h-2 rounded-full bg-brand-secondary" />
+              <span>LIYAAN KARBELKAR · THE LEGACY WE LEAVE</span>
+              <span className="w-2 h-2 rounded-full bg-brand-secondary" />
+              <span>SADA MBARUK SAID · THREE CLOCKS</span>
               <span className="w-2 h-2 rounded-full bg-brand-secondary" />
             </div>
           ))}
         </div>
       </div>
 
-      {/* Agenda Section */}
-      <section className="py-32 px-6 md:px-16 max-w-screen-2xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-20">
-          <div className="md:col-span-4">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="sticky top-40"
-            >
-              <span className="font-typewriter text-[10px] uppercase tracking-[0.6em] text-brand-secondary mb-4 block">The Assembly</span>
-              <h2 className="text-6xl md:text-8xl font-title font-black uppercase text-brand-primary leading-[0.8] tracking-tighter">
-                Agenda.<br />
-                <span className="opacity-20 text-[0.4em] tracking-normal font-sans block mt-4 uppercase">Time Unfolding</span>
-              </h2>
-            </motion.div>
-          </div>
+      {/* Sectors Removed */}
 
-          <div className="md:col-span-8">
-            <div className="relative border-l border-brand-primary/10 pl-8 md:pl-20 py-10 space-y-32">
-              {[
-                { time: '08:30', title: 'The Arrival', sub: 'Registration & Portal Opening', theme: 'past' },
-                { time: '09:30', title: 'Session I: Echoes', sub: 'Foundations and Legacies', theme: 'past' },
-                { time: '11:30', title: 'Session II: Presence', sub: 'The Power of Now', theme: 'present' },
-                { time: '13:00', title: 'Assembly Break', sub: 'Interactive Exhibitions', theme: 'present' },
-                { time: '14:30', title: 'Session III: Reimagining', sub: 'Designing the Future', theme: 'future' },
-                { time: '16:30', title: 'The Closing', sub: 'Final Manifesto', theme: 'future' },
-              ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-10%" }}
-                  transition={{ delay: i * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="relative group"
-                >
-                  <div className="absolute -left-[calc(2.5rem+4px)] md:-left-[calc(5rem+4px)] top-2 w-10 h-10 md:w-16 md:h-16 rounded-full bg-[#E8F5EE] border border-brand-primary/10 flex items-center justify-center group-hover:border-brand-secondary transition-colors duration-500 shadow-sm">
-                     <span className={`w-2 h-2 rounded-full ${item.theme === 'past' ? 'bg-brand-primary' : (item.theme === 'present' ? 'bg-brand-secondary' : 'bg-brand-primary/40')}`} />
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <span className="font-typewriter text-xl md:text-2xl text-brand-primary/30 group-hover:text-brand-secondary transition-colors duration-500">
-                      {item.time}
-                    </span>
-                    <div className="space-y-2">
-                       <h3 className="text-4xl md:text-6xl font-title font-black uppercase text-brand-primary tracking-tight">
-                         {item.title}
-                       </h3>
-                       <p className="font-editorial text-2xl text-brand-primary/40 italic">
-                         {item.sub}
-                       </p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Venue Section */}
-      <section className="py-32 px-6 md:px-16 max-w-screen-2xl mx-auto relative z-10 border-t border-brand-outline">
-        <div className="flex flex-col md:flex-row gap-20 items-center">
-          <div className="flex-1 space-y-12">
-            <div className="space-y-4">
-              <span className="font-typewriter text-[10px] uppercase tracking-[0.6em] text-brand-secondary">The Location</span>
-              <h2 className="text-6xl md:text-8xl font-title font-black uppercase text-brand-primary leading-none tracking-tighter">
-                Nursery <br /> Campus.
-              </h2>
-            </div>
-            <div className="space-y-6 font-editorial text-2xl text-brand-primary/60 italic leading-snug">
-              <p>AlMuntazir Islamic International Schools</p>
-              <p>UN Road, Upanga, Dar es Salaam</p>
-              <p>Tanzania</p>
-            </div>
-            <Link to="/about#contact" className="inline-block px-10 py-4 bg-brand-primary text-white font-title text-sm uppercase tracking-widest rounded-full hover:bg-brand-secondary transition-all">
-              Get Directions
-            </Link>
-          </div>
-          <div className="flex-1 w-full aspect-video bg-brand-surface border border-brand-outline rounded-[3rem] overflow-hidden grayscale hover:grayscale-0 transition-all duration-1000">
-             <iframe 
-               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.7358249826354!2d39.2789178!3d-6.8016466!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4b10492e86bf%3A0xc68e7ec89f074d28!2sAl-Muntazir%20School%20(Nursery%20Campus)!5e0!3m2!1sen!2stz!4v1715993600000!5m2!1sen!2stz" 
-               width="100%" 
-               height="100%" 
-               style={{ border: 0 }} 
-               allowFullScreen 
-               loading="lazy" 
-               referrerPolicy="no-referrer-when-downgrade"
-             ></iframe>
-          </div>
-        </div>
-      </section>
 
       {/* Sponsors Strip */}
       <div className="py-20 border-t border-brand-outline bg-brand-surface/30 px-6 md:px-16 overflow-hidden">

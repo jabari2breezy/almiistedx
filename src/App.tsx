@@ -9,8 +9,13 @@ import Home from './pages/Home';
 import Theme from './pages/Theme';
 import SpeakersPage from './pages/Speakers';
 import About from './pages/About';
+import Agenda from './pages/Agenda';
+import FAQ from './pages/FAQ';
 import Footer from './components/Footer';
+import Loader3D from './components/Loader3D';
+import ScrollToTopButton from './components/ScrollToTopButton';
 import { useEffect } from 'react';
+import Lenis from 'lenis';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -37,6 +42,8 @@ function AnimatedRoutes() {
           <Route path="/theme" element={<Theme />} />
           <Route path="/speakers" element={<SpeakersPage />} />
           <Route path="/about" element={<About />} />
+          <Route path="/agenda" element={<Agenda />} />
+          <Route path="/faq" element={<FAQ />} />
         </Routes>
       </motion.div>
     </AnimatePresence>
@@ -44,10 +51,33 @@ function AnimatedRoutes() {
 }
 
 export default function App() {
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      touchMultiplier: 2,
+      infinite: false,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
+
   return (
     <Router>
-      <SmoothScroll>
-        <div className="relative selection:bg-brand-secondary selection:text-white min-h-screen flex flex-col">
+      <div className="relative selection:bg-brand-secondary selection:text-white min-h-screen flex flex-col">
           <InteractiveBackground />
           <CurtainTransition />
           <FloatingCursor />
@@ -60,8 +90,9 @@ export default function App() {
           
           {/* Oryzo-style scanline overlay */}
           <div className="fixed inset-0 pointer-events-none z-[100] opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[size:100%_2px,3px_100%]" />
+          <Loader3D />
+          <ScrollToTopButton />
         </div>
-      </SmoothScroll>
     </Router>
   );
 }

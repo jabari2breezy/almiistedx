@@ -20,13 +20,15 @@ export default function Footer() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-20">
           <div className="space-y-8">
-            <h4 className="font-typewriter text-[10px] uppercase tracking-[0.4em] text-brand-primary/40">Navigation</h4>
+            <h4 className="font-typewriter text-[10px] uppercase tracking-[0.4em] text-brand-primary/40">Explore</h4>
             <div className="flex flex-col gap-4 font-title text-xl uppercase tracking-tighter text-brand-primary">
               <Link to="/" className="hover:text-brand-secondary transition-colors">Home</Link>
               <Link to="/theme" className="hover:text-brand-secondary transition-colors">Theme</Link>
               <Link to="/speakers" className="hover:text-brand-secondary transition-colors">Speakers</Link>
+              <Link to="/agenda" className="hover:text-brand-secondary transition-colors">Agenda</Link>
+              <Link to="/faq" className="hover:text-brand-secondary transition-colors">FAQs</Link>
               <Link to="/about" className="hover:text-brand-secondary transition-colors">About</Link>
             </div>
           </div>
@@ -35,10 +37,28 @@ export default function Footer() {
             <h4 className="font-typewriter text-[10px] uppercase tracking-[0.4em] text-brand-primary/40">Connect</h4>
             <div className="flex flex-col gap-4 font-title text-xl uppercase tracking-tighter text-brand-primary">
               <a href={SOCIALS.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-brand-secondary transition-colors group">
-                Instagram <ArrowUpRight size={16} className="opacity-40 group-hover:opacity-100 transition-all group-hover:translate-x-1 group-hover:-translate-y-1" />
+                Instagram <ArrowUpRight size={16} className="opacity-40" />
               </a>
               <a href={`mailto:${SOCIALS.email}`} className="flex items-center gap-3 hover:text-brand-secondary transition-colors group">
-                Contact <ArrowUpRight size={16} className="opacity-40 group-hover:opacity-100 transition-all group-hover:translate-x-1 group-hover:-translate-y-1" />
+                Contact <ArrowUpRight size={16} className="opacity-40" />
+              </a>
+            </div>
+          </div>
+
+          <div className="space-y-8">
+            <h4 className="font-typewriter text-[10px] uppercase tracking-[0.4em] text-brand-primary/40">Location</h4>
+            <div className="space-y-6">
+              <div className="font-title text-xl uppercase tracking-tighter text-brand-primary leading-tight">
+                AlMuntazir Nursery,<br />
+                UN Road, Upanga
+              </div>
+              <a 
+                href="https://www.google.com/maps/search/?api=1&query=Al+Muntazir+Islamic+International+School+-+Nursery" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 px-6 py-3 border border-brand-outline rounded-full font-typewriter text-[10px] uppercase tracking-widest hover:bg-brand-primary hover:text-white transition-all group"
+              >
+                Get Directions <ArrowUpRight size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </a>
             </div>
           </div>

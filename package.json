@@ -14,6 +14,8 @@
   "dependencies": {
     "@google/genai": "^1.29.0",
     "@mailchimp/mailchimp_marketing": "^3.0.80",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^5.0.4",
     "clsx": "^2.1.1",
@@ -28,6 +30,7 @@
     "react-router-dom": "^7.15.0",
     "resend": "^6.12.3",
     "tailwind-merge": "^3.6.0",
+    "three": "^0.184.0",
     "tsx": "^4.21.0",
     "vite": "^6.2.3"
   },

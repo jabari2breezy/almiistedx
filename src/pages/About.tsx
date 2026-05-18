@@ -221,37 +221,6 @@ export default function About() {
             ))}
           </div>
         </section>
-
-        {/* FAQ Section */}
-        <section className="py-40 border-t border-brand-outline">
-          <div className="mb-24">
-            <span className="font-typewriter text-[10px] text-brand-secondary tracking-[1em] uppercase mb-12">Clarity / FAQ</span>
-            <h2 className="text-6xl md:text-9xl font-title font-black tracking-tighter uppercase leading-[0.8] text-brand-primary">
-              The <br /><span className="italic font-editorial lowercase text-brand-secondary">Answers.</span>
-            </h2>
-          </div>
-
-          <div className="max-w-4xl space-y-4">
-            {[
-              { q: "What should I expect from the event?", a: "Expect a day of high-energy talks, interactive exhibits, and profound connections. We follow the official TED format: short, powerful talks designed to spark deep discussion." },
-              { q: "Who can attend this edition?", a: "This edition is primarily for students, educators, and the Almuntazir community, though we welcome all who are curious about our theme of Borrowed Time." },
-              { q: "Is the event free?", a: "Tickets are required to manage capacity. Please use the registration form above to reserve your seat or inquiry about availability." },
-              { q: "How long does it last?", a: "The assembly runs from 08:30 to 17:00. We recommend attending the full day to experience the arc of the theme." },
-            ].map((faq, i) => (
-              <details key={i} className="group border border-brand-outline bg-brand-surface/50 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all">
-                <summary className="px-10 py-8 flex justify-between items-center cursor-pointer list-none">
-                  <h4 className="text-xl md:text-2xl font-title font-black uppercase text-brand-primary tracking-tight">{faq.q}</h4>
-                  <div className="w-8 h-8 rounded-full border border-brand-outline flex items-center justify-center group-open:rotate-45 transition-transform duration-300">
-                     <Plus size={16} />
-                  </div>
-                </summary>
-                <div className="px-10 pb-8 pt-0 font-editorial text-xl text-brand-primary/60 italic leading-relaxed">
-                  {faq.a}
-                </div>
-              </details>
-            ))}
-          </div>
-        </section>
       </div>
     </motion.div>
   );

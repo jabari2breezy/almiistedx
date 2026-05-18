@@ -30,7 +30,9 @@ export default function Navbar() {
     { name: 'Home', href: '/', id: '01', sub: 'The Beginning' },
     { name: 'Theme', href: '/theme', id: '02', sub: 'Borrowed Time' },
     { name: 'Speakers', href: '/speakers', id: '03', sub: 'Global Voices' },
-    { name: 'About TED', href: '/about', id: '04', sub: 'Our Philosophy' },
+    { name: 'Agenda', href: '/agenda', id: '04', sub: 'Time Unfolding' },
+    { name: 'FAQ', href: '/faq', id: '05', sub: 'The Answers' },
+    { name: 'About', href: '/about', id: '06', sub: 'Our Philosophy' },
   ];
 
   return (
@@ -53,7 +55,9 @@ export default function Navbar() {
         {[
           { name: 'Home', href: '/' },
           { name: 'Theme', href: '/theme' },
+          { name: 'Agenda', href: '/agenda' },
           { name: 'Speakers', href: '/speakers' },
+          { name: 'FAQ', href: '/faq' },
           { name: 'About', href: '/about' },
         ].map((item) => (
           <Link 
@@ -76,15 +80,6 @@ export default function Navbar() {
       </div>
 
       <div className="flex items-center gap-4 md:gap-8 pointer-events-auto">
-        {/* Registration - Minimal Pill */}
-        <div className="hidden sm:block">
-          <Link to="/about#contact">
-            <button className="px-8 py-2.5 text-[9px] tracking-[0.3em] font-bold font-sans bg-brand-primary text-white rounded-full hover:bg-brand-secondary transition-all hover:shadow-lg hover:shadow-brand-secondary/20 active:scale-95">
-              REGISTER
-            </button>
-          </Link>
-        </div>
-
         {/* Menu Toggle */}
         <button 
           className="group flex items-center gap-4 bg-white/60 backdrop-blur-xl border border-white/40 rounded-full pl-6 pr-4 py-2 shadow-sm transition-all hover:bg-white"
@@ -108,7 +103,8 @@ export default function Navbar() {
             animate={{ y: 0 }}
             exit={{ y: '-100%' }}
             transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
-            className="fixed inset-0 bg-brand-primary z-[150] flex flex-col pointer-events-auto border-b border-white/5 shadow-2xl text-white"
+            className="fixed inset-0 bg-brand-primary z-[150] flex flex-col pointer-events-auto border-b border-white/5 shadow-2xl text-white overflow-y-auto custom-scrollbar"
+            data-lenis-prevent
           >
             {/* Liquid Background Decoration */}
             <div className="absolute inset-0 liquid-bg opacity-10 pointer-events-none" />

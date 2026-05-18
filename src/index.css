@@ -108,3 +108,7 @@
 .custom-cursor {
   mix-blend-mode: difference;
 }
+
+.vertical-text {
+  writing-mode: vertical-rl;
+}

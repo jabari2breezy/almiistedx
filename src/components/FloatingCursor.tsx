@@ -4,7 +4,7 @@ import { motion, useSpring, useMotionValue, AnimatePresence } from 'motion/react
 export default function FloatingCursor() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const [hoverType, setHoverType] = useState<'default' | 'button' | 'text' | 'card'>('default');
+  const [hoverType, setHoverType] = useState<'default' | 'button' | 'text' | 'card' | 'view'>('default');
   const [magneticPos, setMagneticPos] = useState({ x: 0, y: 0, active: false });
 
   const springConfig = { damping: 40, stiffness: 250, mass: 0.8 };
@@ -27,8 +27,13 @@ export default function FloatingCursor() {
       const target = e.target as HTMLElement;
       const interactive = target.closest('button, a, .interactive');
       const card = target.closest('.group');
+      const view = target.closest('.view-target');
       
-      if (card && !interactive) {
+      if (view) {
+        setHoverType('view');
+        setMagneticPos({ x: 0, y: 0, active: false });
+        ringScale.set(2.5);
+      } else if (card && !interactive) {
         setHoverType('card');
         setMagneticPos({ x: 0, y: 0, active: false });
         ringScale.set(2.5);
@@ -50,7 +55,7 @@ export default function FloatingCursor() {
       } else if (target.closest('h1, h2, h3, p')) {
         setHoverType('text');
         setMagneticPos({ x: 0, y: 0, active: false });
-        ringScale.set(hoverType === 'text' ? 2.5 : 3);
+        ringScale.set(2.5);
       } else {
         setHoverType('default');
         setMagneticPos({ x: 0, y: 0, active: false });
@@ -101,6 +106,16 @@ export default function FloatingCursor() {
         <div className="absolute w-1 h-1 rounded-full bg-brand-secondary" />
 
         <AnimatePresence>
+          {hoverType === 'view' && (
+            <motion.span
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              className="absolute font-typewriter text-[8px] uppercase tracking-widest text-brand-secondary font-bold"
+            >
+              VIEW
+            </motion.span>
+          )}
           {hoverType === 'card' && (
             <motion.span
               initial={{ opacity: 0, scale: 0.5 }}
