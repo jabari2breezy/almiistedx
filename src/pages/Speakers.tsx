@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { SEGMENTS } from '../constants';
-import { Search, Plus, X, ArrowUpRight } from 'lucide-react';
+import { Search, Plus, X } from 'lucide-react';
 import Magnetic from '../components/Magnetic';
 import MaskReveal from '../components/MaskReveal';
-import PerspectiveCard from '../components/PerspectiveCard';
+import InteractiveBackground from '../components/InteractiveBackground';
+import FloatingBackground from '../components/FloatingBackground';
 import { MechanicalClock, ModernSandglass, DigitalNetwork } from '../components/ModernAnimation';
 
 const transition = { duration: 1.2, ease: [0.76, 0, 0.24, 1] };
@@ -21,14 +22,12 @@ const containerVariants = {
 };
 
 const speakerVariants = {
-  hidden: { opacity: 0, x: -10, y: 40 },
+  hidden: { opacity: 0 },
   visible: { 
     opacity: 1, 
-    x: 0, 
-    y: 0,
     transition: { 
-      duration: 1.4, 
-      ease: [0.22, 1, 0.36, 1] 
+      duration: 0.3, 
+      ease: "easeOut" 
     }
   }
 };
@@ -58,14 +57,21 @@ export default function Speakers() {
 
   useEffect(() => {
     fetch('/api/speakers')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
+      })
       .then(data => {
         setSpeakersData(data);
         setIsLoading(false);
       })
       .catch(err => {
-        console.error('Error fetching speakers:', err);
-        setIsLoading(false);
+        console.warn('Error fetching speakers, using fallback data:', err);
+        // Fallback to constants if API fails
+        import('../constants').then(m => {
+          setSpeakersData(m.SPEAKERS);
+          setIsLoading(false);
+        });
       });
   }, []);
 
@@ -81,9 +87,12 @@ export default function Speakers() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="pt-40 pb-32"
+      className="pt-40 pb-32 min-h-screen relative overflow-hidden"
     >
-      <div className="px-6 md:px-16 max-w-screen-2xl mx-auto">
+      <InteractiveBackground />
+      <FloatingBackground />
+      
+      <div className="px-6 md:px-16 max-w-screen-2xl mx-auto relative z-10">
         <header className="mb-32 flex flex-col md:flex-row md:items-end justify-between gap-12">
           <motion.div
             initial={{ y: 30, opacity: 0 }}
@@ -102,45 +111,8 @@ export default function Speakers() {
           </div>
         </header>
         
-        {/* Featured 3D Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-32">
-          {speakersData.slice(0, 3).map((speaker, i) => (
-            <motion.div 
-              key={`featured-${speaker.id}`}
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + i * 0.1, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <PerspectiveCard className="group cursor-none">
-                <div 
-                  className="aspect-[3/4] rounded-[2rem] bg-brand-primary overflow-hidden relative border border-white/10"
-                  onClick={() => setSelectedSpeaker(speaker)}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-primary via-transparent to-transparent z-10 opacity-60" />
-                  <div className="absolute inset-0 flex flex-col justify-end p-8 z-20">
-                    <span className="font-typewriter text-[9px] text-brand-secondary tracking-[0.4em] uppercase mb-2">Featured / 0{i+1}</span>
-                    <h3 className="text-3xl font-title font-black uppercase text-white leading-none mb-1">{speaker.name}</h3>
-                    <p className="font-editorial text-white/50 italic text-sm truncate">{speaker.topic}</p>
-                    
-                    <div className="absolute top-8 right-8 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white scale-0 group-hover:scale-100 transition-transform duration-500">
-                      <ArrowUpRight size={20} />
-                    </div>
-                  </div>
-                  
-                  {/* Visual Background Decoration */}
-                  <div className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity duration-700">
-                    {speaker.segmentId === 'past' && <MechanicalClock className="w-full h-full text-white p-12" />}
-                    {speaker.segmentId === 'present' && <ModernSandglass className="w-full h-full text-white p-12" />}
-                    {speaker.segmentId === 'future' && <DigitalNetwork className="w-full h-full text-white p-12" />}
-                  </div>
-                </div>
-              </PerspectiveCard>
-            </motion.div>
-          ))}
-        </div>
-
         {/* Dynamic Filter / Search */}
-        <div className="flex flex-col lg:flex-row gap-12 mb-20 border-y border-brand-outline py-12">
+        <div className="flex flex-col lg:flex-row gap-12 mb-20 border-y border-brand-outline py-12 px-8 -mx-8 bg-white/5 backdrop-blur-sm rounded-xl relative z-20">
           <div className="flex flex-wrap gap-8">
             {['all', ...SEGMENTS.map(s => s.id)].map(id => (
               <button
@@ -186,115 +158,137 @@ export default function Speakers() {
               animate="visible"
               className="space-y-4"
             >
-              <AnimatePresence mode="popLayout">
+              <div className="space-y-4">
                 {filteredSpeakers.map((speaker, i) => (
-                <motion.div
+                <div
                   key={speaker.id}
-                  layout
-                  variants={speakerVariants}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="group relative grid grid-cols-1 md:grid-cols-12 gap-8 py-16 border-b border-brand-outline hover:bg-brand-surface transition-colors px-6 -mx-6 rounded-[2rem] items-center overflow-hidden"
+                  className="group relative grid grid-cols-1 md:grid-cols-12 gap-8 py-16 border-b border-brand-outline px-6 -mx-6 rounded-[2rem] items-center overflow-hidden hover:bg-white/5 hover:backdrop-blur-md transition-all duration-500"
                 >
-                  {/* Subtle Background Animation on Hover */}
-                  <div className="absolute inset-0 z-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none">
-                    {speaker.segmentId === 'past' && <MechanicalClock className="w-full h-full scale-150 translate-x-1/2" />}
-                    {speaker.segmentId === 'present' && <ModernSandglass className="w-full h-full scale-150 -translate-x-1/4" />}
-                    {speaker.segmentId === 'future' && <DigitalNetwork className="w-full h-full scale-110" />}
-                  </div>
-
-                <div className="md:col-span-1 font-typewriter text-[11px] text-brand-primary/20 group-hover:text-brand-secondary transition-colors relative z-10">
+                <div className="md:col-span-1 font-typewriter text-[11px] text-brand-primary/20 relative z-10 hidden md:block">
                   0{i + 1}
                 </div>
-                <div className="md:col-span-5 relative z-10">
-                  <h3 className="text-4xl md:text-6xl font-title font-black tracking-tighter text-brand-primary group-hover:pl-4 transition-all duration-500 uppercase">
-                    {speaker.name}
-                  </h3>
+                <div className="md:col-span-10 relative z-10">
+                  <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-12">
+                    <div className="flex items-center justify-between md:block">
+                      <h3 className="text-3xl md:text-6xl font-title font-black tracking-tighter text-brand-primary uppercase">
+                        {speaker.name}
+                      </h3>
+                      <span className="md:hidden font-typewriter text-[10px] text-brand-primary/20">0{i + 1}</span>
+                    </div>
+                    <p className="font-editorial text-xl md:text-3xl text-brand-primary/40 italic leading-tight pr-4">
+                      "{speaker.topic}"
+                    </p>
+                  </div>
                 </div>
-                <div className="md:col-span-5 pb-4 md:pb-0 relative z-10">
-                  <p className="font-editorial text-2xl md:text-3xl text-brand-primary/40 italic leading-tight group-hover:text-brand-primary transition-colors">
-                    "{speaker.topic}"
-                  </p>
-                </div>
-                <div className="md:col-span-1 flex justify-end relative z-10">
+                <div className="md:col-span-1 flex justify-start md:justify-end relative z-10 mt-4 md:mt-0">
                   <Magnetic strength={0.4}>
                     <button 
                       onClick={() => {
                         setSelectedSpeaker(speaker);
                         hapticTick();
                       }}
-                      className="w-16 h-16 rounded-full border-2 border-brand-outline flex items-center justify-center group-hover:bg-brand-secondary group-hover:border-brand-secondary transition-all text-brand-primary group-hover:text-white"
+                      className="w-16 h-16 rounded-full border-2 border-brand-outline flex items-center justify-center text-brand-primary hover:bg-brand-secondary hover:border-brand-secondary hover:text-white transition-colors"
                     >
-                      <Plus size={24} className="group-hover:rotate-90 transition-transform duration-500" />
+                      <Plus size={24} />
                     </button>
                   </Magnetic>
                 </div>
-              </motion.div>
+              </div>
             ))}
-              </AnimatePresence>
+              </div>
             </motion.div>
           )}
         </div>
       </div>
 
-      {/* Polish Modal Section - Airbnb Style */}
+      {/* Polish Modal Section - Apple Glass Design */}
       <AnimatePresence>
         {selectedSpeaker && (
-          <>
+          <div className="fixed inset-0 z-[500] flex items-center justify-center p-4 md:p-8">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedSpeaker(null)}
-              className="fixed inset-0 bg-brand-primary/95 backdrop-blur-xl z-[500] cursor-pointer"
+              className="absolute inset-0 bg-brand-primary/20 backdrop-blur-md cursor-pointer"
             />
-            <motion.div
-              layoutId={`speaker-${selectedSpeaker.id}`}
-              initial={{ y: "100%", opacity: 0.5 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: "100%", opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 left-0 right-0 md:inset-4 lg:inset-[10%] bg-white rounded-t-[2.5rem] md:rounded-[2rem] z-[501] overflow-hidden shadow-2xl flex flex-col md:flex-row pointer-events-auto h-[90vh] md:h-auto"
-            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0, y: 40 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 40 }}
+                transition={{ type: "spring", damping: 25, stiffness: 200, mass: 1 }}
+                className="relative w-full max-w-3xl bg-white/40 backdrop-blur-3xl rounded-[2.5rem] md:rounded-[3rem] shadow-[0_32px_128px_rgba(0,0,0,0.1)] border border-white/40 flex flex-col h-auto max-h-[85vh] pointer-events-auto overflow-hidden"
+              >
               <button 
                 onClick={() => setSelectedSpeaker(null)}
-                className="absolute top-6 right-8 md:right-6 w-12 h-12 rounded-full bg-brand-primary/5 hover:bg-brand-primary/10 flex items-center justify-center text-brand-primary z-10 transition-colors"
+                className="absolute top-6 right-6 md:top-8 md:right-8 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/40 backdrop-blur-md hover:bg-white/60 flex items-center justify-center text-brand-primary z-50 transition-all active:scale-90 border border-white/20 shadow-sm"
               >
-                <X size={24} />
+                <X size={20} className="md:w-6 md:h-6" />
               </button>
 
-              <div className="w-full md:w-1/3 h-full bg-brand-surface relative flex items-center justify-center p-12 overflow-hidden">
-                {selectedSpeaker.segmentId === 'past' && <MechanicalClock className="w-full h-full text-brand-primary" />}
-                {selectedSpeaker.segmentId === 'present' && <ModernSandglass className="w-full h-full text-brand-secondary" />}
-                {selectedSpeaker.segmentId === 'future' && <DigitalNetwork className="w-full h-full text-brand-primary" />}
+              {/* Content Area */}
+              <div 
+                className="flex-1 p-6 md:p-16 pt-16 md:pt-20 overflow-y-auto custom-scrollbar"
+                data-lenis-prevent
+              >
+                <div className="mb-10 md:mb-12">
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <span className="font-typewriter text-[10px] text-brand-secondary uppercase tracking-[0.5em] mb-4 block opacity-60">
+                      {SEGMENTS.find(s => s.id === selectedSpeaker.segmentId)?.title || 'Speaker'} / Journal Entry
+                    </span>
+                    <h2 className="font-title text-5xl md:text-6xl font-black uppercase text-brand-primary leading-[0.9] tracking-tighter mb-4">
+                      {selectedSpeaker.name}
+                    </h2>
+                  </motion.div>
+                </div>
                 
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-surface via-transparent to-transparent opacity-80" />
-              </div>
+                <div className="space-y-10">
+                  <motion.section
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <h4 className="font-typewriter text-[9px] uppercase tracking-widest text-brand-primary/40 border-b border-brand-outline/20 pb-4 mb-6">Topic Title</h4>
+                    <p className="font-editorial text-3xl italic text-brand-primary leading-tight">"{selectedSpeaker.topic}"</p>
+                  </motion.section>
 
-              <div className="w-full md:w-2/3 p-10 md:p-16 pt-16 overflow-y-auto custom-scrollbar bg-white">
-                <div className="w-12 h-1.5 bg-brand-outline/40 rounded-full mx-auto mb-8 md:hidden" />
-                <span className="font-typewriter text-xs text-brand-secondary uppercase tracking-[0.4em] mb-4 block">
-                  {SEGMENTS.find(s => s.id === selectedSpeaker.segmentId)?.title || 'Speaker'}
-                </span>
-                <h2 className="font-kinetic text-4xl md:text-6xl font-black uppercase text-brand-primary leading-none mb-8">
-                  {selectedSpeaker.name}
-                </h2>
-                
-                <div className="space-y-12">
-                  <section>
-                    <h4 className="font-typewriter text-[9px] uppercase tracking-widest text-brand-primary/40 border-b border-brand-outline pb-4 mb-6">Manifesto Topic</h4>
-                    <p className="font-title text-2xl uppercase text-brand-primary">{selectedSpeaker.topic}</p>
-                  </section>
-
-                  <section>
-                    <h4 className="font-typewriter text-[9px] uppercase tracking-widest text-brand-primary/40 border-b border-brand-outline pb-4 mb-6">About</h4>
-                    <p className="font-editorial text-xl italic text-brand-primary/70 leading-relaxed">
-                      {selectedSpeaker.bio || "Sharing transformative insights on the intersection of humanity, technology, and the ticking clock of our shared existence."}
-                    </p>
-                  </section>
+                  <motion.section
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="relative group/bio"
+                  >
+                    <h4 className="font-typewriter text-[9px] uppercase tracking-widest text-brand-primary/40 border-b border-brand-outline/20 pb-4 mb-6">The Narrative</h4>
+                    <div className="p-8 rounded-3xl bg-white/20 border border-white/20 backdrop-blur-md shadow-inner">
+                      <div className="font-sans text-lg text-brand-primary/90 leading-relaxed max-w-2xl space-y-4">
+                        <p className="first-letter:text-5xl first-letter:font-editorial first-letter:float-left first-letter:mr-3 first-letter:leading-none first-letter:text-brand-secondary">
+                          {selectedSpeaker.bio || "This speaker will be sharing transformative insights on the intersection of humanity, technology, and the ticking clock of our shared existence, challenging us to rethink how we choose to spend the time we possess."}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.section>
+                  
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="pt-4 flex justify-end"
+                  >
+                    <button 
+                      onClick={() => setSelectedSpeaker(null)}
+                      className="px-10 py-5 bg-white/40 backdrop-blur-xl border border-white/40 text-brand-primary rounded-full font-typewriter text-[10px] uppercase tracking-[0.2em] hover:bg-brand-primary hover:text-white transition-all active:scale-95 shadow-lg shadow-black/5"
+                    >
+                      Close Journal
+                    </button>
+                  </motion.div>
                 </div>
               </div>
             </motion.div>
-          </>
+          </div>
         )}
       </AnimatePresence>
     </motion.div>

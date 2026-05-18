@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://tedxalmuntazir.com/</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://tedxalmuntazir.com/theme</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tedxalmuntazir.com/speakers</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tedxalmuntazir.com/about</loc>
+    <priority>0.7</priority>
+  </url>
+</urlset>

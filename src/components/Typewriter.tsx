@@ -42,14 +42,27 @@ export default function Typewriter({
   }, [displayedText, text, isStarted, isComplete, speed]);
 
   return (
-    <span className={`${className} inline relative`}>
-      {displayedText}
-      <motion.span
-        initial={{ opacity: 1 }}
-        animate={{ opacity: [1, 0, 1] }}
-        transition={{ duration: 0.3, repeat: Infinity, ease: "easeInOut" }}
-        className="inline-block w-[0.1em] h-[1em] ml-1 bg-brand-secondary align-middle"
-      />
+    <span className={`${className} relative inline-grid grid-cols-1 grid-rows-1`}>
+      {/* Spacer to reserve layout space */}
+      <span className="invisible select-none pointer-events-none col-start-1 row-start-1">
+        {text}
+      </span>
+      {/* Actual typing text */}
+      <span className="col-start-1 row-start-1">
+        {displayedText}
+        <AnimatePresence>
+          {!isComplete && (
+            <motion.span
+              initial={{ opacity: 1 }}
+              animate={{ opacity: [1, 0, 1] }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8, repeat: Infinity, ease: "steps(2)" }}
+              style={{ backgroundColor: cursorColor }}
+              className="inline-block w-[0.15em] h-[1em] ml-1 align-middle"
+            />
+          )}
+        </AnimatePresence>
+      </span>
     </span>
   );
 }

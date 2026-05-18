@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useScroll } from 'motion/react';
 import { X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
@@ -9,13 +9,20 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [quote, setQuote] = useState<{ text: string, author: string } | null>(null);
   const location = useLocation();
+  const { scrollYProgress } = useScroll();
 
   useEffect(() => {
     if (isOpen) {
       fetch('/api/quote')
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+          return res.json();
+        })
         .then(setQuote)
-        .catch(err => console.error('Quote fetch failed', err));
+        .catch(err => {
+          console.warn('Quote fetch failed, using fallback:', err);
+          setQuote({ text: "The clock was already running when you opened your eyes.", author: "Anonymous" });
+        });
     }
   }, [isOpen]);
 
@@ -27,64 +34,68 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-[100] px-6 md:px-16 py-8 flex justify-between items-center pointer-events-none">
-      <Link to="/" className="pointer-events-auto">
-        <Logo variant="tedx" className="scale-75 md:scale-100 origin-left" />
-      </Link>
+    <>
+      <motion.div 
+        className="fixed top-0 left-0 right-0 h-[2px] bg-brand-secondary z-[200] origin-left"
+        style={{ scaleX: scrollYProgress }}
+      />
+      <nav className="fixed top-0 left-0 w-full z-[100] px-6 md:px-12 py-6 flex justify-between items-center pointer-events-none">
+      <div className="flex items-center gap-6 pointer-events-auto">
+        <Link to="/" className="flex items-baseline gap-4">
+          <Logo variant="tedx" className="scale-75 md:scale-90 origin-left" />
+          <div className="hidden lg:block w-[1px] h-4 bg-brand-primary/20" />
+          <Logo variant="school" className="hidden lg:block scale-75 origin-left opacity-60 hover:opacity-100 transition-opacity" />
+        </Link>
+      </div>
 
-      <div className="flex items-center gap-10 pointer-events-auto">
-        {/* School Logo */}
-        <div className="hidden md:block">
-          <Logo variant="school" className="scale-90" />
-        </div>
+      {/* Navbar Pill - Desktop Centered */}
+      <div className="hidden xl:flex items-center bg-white/60 backdrop-blur-2xl rounded-full p-1.5 border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.05)] pointer-events-auto">
+        {[
+          { name: 'Home', href: '/' },
+          { name: 'Theme', href: '/theme' },
+          { name: 'Speakers', href: '/speakers' },
+          { name: 'About', href: '/about' },
+        ].map((item) => (
+          <Link 
+            key={item.href}
+            to={item.href}
+            className={`px-6 py-2 rounded-full text-[9px] font-sans font-bold uppercase tracking-[0.2em] transition-all duration-300 relative ${
+              location.pathname === item.href ? 'text-white' : 'text-brand-primary/50 hover:text-brand-primary'
+            }`}
+          >
+            {location.pathname === item.href && (
+              <motion.div 
+                layoutId="nav-glow"
+                className="absolute inset-0 bg-brand-primary rounded-full z-[-1]"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            {item.name}
+          </Link>
+        ))}
+      </div>
 
-        {/* Navbar Pill - Desktop */}
-        <div className="hidden md:flex items-center bg-white/40 backdrop-blur-xl rounded-full p-1 border border-brand-primary/5 shadow-[0_8px_32px_rgba(0,43,91,0.05)]">
-          {[
-            { name: 'Home', href: '/' },
-            { name: 'Theme', href: '/theme' },
-            { name: 'Speakers', href: '/speakers' },
-            { name: 'About', href: '/about' },
-          ].map((item) => (
-            <Link 
-              key={item.href}
-              to={item.href}
-              className={`px-8 py-2.5 rounded-full text-[10px] font-sans font-semibold uppercase tracking-[0.25em] transition-all duration-500 relative ${
-                location.pathname === item.href ? 'text-white' : 'text-brand-primary/60 hover:text-brand-primary'
-              }`}
-            >
-              {location.pathname === item.href && (
-                <motion.div 
-                  layoutId="nav-glow"
-                  className="absolute inset-0 bg-brand-primary rounded-full z-[-1]"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                />
-              )}
-              {item.name}
-            </Link>
-          ))}
-        </div>
-
+      <div className="flex items-center gap-4 md:gap-8 pointer-events-auto">
         {/* Registration - Minimal Pill */}
-        <div className="hidden lg:block">
+        <div className="hidden sm:block">
           <Link to="/about#contact">
-            <button className="brutalist-button px-10 py-3 text-[10px] tracking-[0.4em] font-sans !bg-brand-primary !text-white border-transparent hover:!bg-brand-secondary transition-colors">
-              REGISTER NOW
+            <button className="px-8 py-2.5 text-[9px] tracking-[0.3em] font-bold font-sans bg-brand-primary text-white rounded-full hover:bg-brand-secondary transition-all hover:shadow-lg hover:shadow-brand-secondary/20 active:scale-95">
+              REGISTER
             </button>
           </Link>
         </div>
 
-        {/* Menu Toggle - Enhanced for visibility */}
+        {/* Menu Toggle */}
         <button 
-          className="group flex items-center gap-5 bg-brand-primary/5 hover:bg-brand-primary/10 backdrop-blur-md border border-brand-primary/10 rounded-full pl-6 pr-4 py-2 transition-all pointer-events-auto"
+          className="group flex items-center gap-4 bg-white/60 backdrop-blur-xl border border-white/40 rounded-full pl-6 pr-4 py-2 shadow-sm transition-all hover:bg-white"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <span className="font-typewriter text-[9px] uppercase tracking-[0.3em] text-brand-primary/70 group-hover:text-brand-secondary transition-colors">
+          <span className="font-typewriter text-[9px] uppercase tracking-[0.2em] text-brand-primary/60 group-hover:text-brand-secondary transition-colors">
             Menu
           </span>
           <div className="flex flex-col items-end gap-1.5 transition-all">
-            <span className="h-[1px] bg-brand-primary transition-all duration-500 w-6 group-hover:w-8 group-hover:bg-brand-secondary" />
-            <span className="h-[1px] bg-brand-primary transition-all duration-500 w-8 group-hover:w-4 group-hover:bg-brand-secondary" />
+            <span className="h-[1px] bg-brand-primary transition-all duration-500 w-5 group-hover:w-7 group-hover:bg-brand-secondary" />
+            <span className="h-[1px] bg-brand-primary transition-all duration-500 w-7 group-hover:w-3 group-hover:bg-brand-secondary" />
           </div>
         </button>
       </div>
@@ -169,5 +180,6 @@ export default function Navbar() {
         )}
       </AnimatePresence>
     </nav>
+    </>
   );
 }

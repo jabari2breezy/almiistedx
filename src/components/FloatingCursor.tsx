@@ -13,6 +13,14 @@ export default function FloatingCursor() {
   
   // Refined Spring for the ring size and scale
   const ringScale = useSpring(1, { damping: 20, stiffness: 100 });
+  const [rotation, setRotation] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRotation(prev => (prev + 1) % 360);
+    }, 50);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -85,6 +93,13 @@ export default function FloatingCursor() {
         }}
         transition={{ type: 'spring', damping: 25, stiffness: 150 }}
       >
+        {/* Clock Hand */}
+        <motion.div 
+          className="absolute h-1/2 w-[1px] bg-brand-secondary origin-bottom bottom-1/2"
+          style={{ rotate: rotation }}
+        />
+        <div className="absolute w-1 h-1 rounded-full bg-brand-secondary" />
+
         <AnimatePresence>
           {hoverType === 'card' && (
             <motion.span
