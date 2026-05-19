@@ -19,27 +19,66 @@ app.get('/api/speakers', (req, res) => {
   const speakers = [
     { 
       id: '1', 
-      name: 'Anaya Rashid', 
-      topic: 'The Culture of Time', 
+      name: 'Ridhwan Mohammed', 
+      topic: 'Topic TBA', 
       segmentId: 'past',
-      bio: "Anaya Rashid explores the subjective nature of time and how cultural perspectives shape our perception of reality. Her talk delves into the tension between our desire for productivity and the intrinsic value of being present in the moment. Through a blend of personal reflection and cultural analysis, she invites us to reconsider how we experience the hours we are given."
+      bio: "Ridhwan Mohammed explores the historical narratives that have shaped our current reality. His talk promises to bridge the gap between yesterday's decisions and today's consequences."
     },
     { 
       id: '2', 
+      name: 'Anaya Rashid', 
+      topic: 'The Culture of Time', 
+      segmentId: 'past',
+      bio: "Anaya Rashid explores the subjective nature of time and how cultural perspectives shape our perception of reality. Her talk delves into the tension between our desire for productivity and the intrinsic value of being present."
+    },
+    { 
+      id: '3', 
       name: 'Zahra Datoo', 
       topic: 'The Architecture of Nostalgia', 
       segmentId: 'past', 
-      bio: "Zahra Datoo examines the emotional architecture of nostalgia and its role in defining our sense of self. She challenges us to reconsider how we value the transient moments of our lives and the legacy we build through presence, emphasizing that our most meaningful memories are often found in the simplest experiences."
+      bio: "Zahra challenges the cliché that 'time is money,' proposing instead that time's true value lies in its ability to create nostalgia. She explores how small, seemingly unproductive moments—a rainy afternoon or unexpected friendships—become priceless memories. By reminding us that being busy isn't the same as being alive, she urges the audience to prioritize presence and embrace the uncertainty of tomorrow."
     },
-    { id: '3', name: 'Hassan Abbas Mohammed', topic: 'The Procrastination Paradox', segmentId: 'present' },
-    { id: '4', name: 'Zahra Moledina', topic: "Capitalism's Clock", segmentId: 'present' },
-    { id: '5', name: 'Liyaan Karbelkar', topic: 'The Legacy We Leave', segmentId: 'future' },
+    { 
+      id: '4', 
+      name: 'Zahra Moledina', 
+      topic: "Capitalism's Clock", 
+      segmentId: 'present',
+      bio: "Zahra Moledina examines how modern economic systems have commodified our hours. She challenges the relentless demand for efficiency and questions whether the clock serves us, or if we serve the clock."
+    },
+    { 
+      id: '5', 
+      name: 'Faizaan', 
+      topic: 'Topic TBA', 
+      segmentId: 'present',
+      bio: "Faizaan delves into the complexities of navigating the modern world. His insights shed light on how we can ground ourselves amidst the rapid pace of contemporary life."
+    },
     { 
       id: '6', 
+      name: 'Hassan Abbas Mohammed', 
+      topic: 'The Procrastination Paradox', 
+      segmentId: 'present',
+      bio: "Hassan Abbas Mohammed unpacks the psychology behind delay. He reveals how procrastination is often less about laziness and more about our complex emotional relationship with time and self-worth."
+    },
+    { 
+      id: '7', 
+      name: 'Yunus Osman', 
+      topic: 'The Art of Scheduling', 
+      segmentId: 'future',
+      bio: "Yunus Osman decodes the structural mastery of time management, exploring how intentional scheduling transforms chaos into predictable success. His talk provides a blueprint for reclaiming control over our future."
+    },
+    { 
+      id: '8', 
       name: 'Sada Mbaruk Said', 
       topic: 'Three Clocks: Climate, Animals, AI', 
       segmentId: 'future',
-      bio: "Sada explores the concept of 'slow destruction,' challenging the notion of a sudden global catastrophe in favor of a more insidious reality: the gradual unraveling of our world through the small, everyday choices we often ignore. By examining the interconnected chain of conflict, societal collapse, and environmental decay, she reveals how seemingly isolated issues feed into a larger systemic crisis. Her talk serves as a powerful reminder that the true danger lies not in a single disaster, but in the millions of moments where we choose not to care, urging us to recognize our collective responsibility before the damage becomes irreversible."
+      bio: "Sada explores 'slow destruction,' challenging the notion of a sudden global catastrophe in favor of a more insidious reality. By examining the interconnected chain of environmental decay and societal shift, she reveals how everyday choices feed into a larger systemic crisis."
+    },
+    { 
+      id: '9', 
+      name: 'Liyaan Karbelkar', 
+      topic: 'The Legacy We Leave', 
+      segmentId: 'future',
+      bio: "Liyaan Karbelkar challenges us to think beyond our immediate lifespans. She asks us to consider how the actions we take today will ripple out to define the world for generations to come."
     }
   ];
   res.json(speakers);

@@ -4,14 +4,21 @@ const transition = { duration: 1, ease: [0.76, 0, 0.24, 1] as const };
 
 export default function Agenda() {
   const agendaItems = [
-    { time: '10:00 - 10:30', title: 'Anaya Rashid', sub: 'The Culture of Time', theme: 'past' },
-    { time: '10:30 - 11:00', title: 'Zahra Datoo', sub: 'The Architecture of Nostalgia', theme: 'past' },
-    { time: '11:00 - 11:45', title: 'Hassan Abbas Mohammed', sub: 'The Procrastination Paradox', theme: 'present' },
-    { time: '11:45 - 12:15', title: 'Zahra Moledina', sub: "Capitalism's Clock", theme: 'present' },
-    { time: '12:15 - 13:00', title: 'Lunch & Prayer', sub: 'Nourishment & Reflection', theme: 'present' },
+    { time: '10:00 - 10:20', title: 'Ridhwan Mohammed', sub: 'Topic TBA', theme: 'past' },
+    { time: '10:20 - 10:40', title: 'Anaya Rashid', sub: 'The Culture of Time', theme: 'past' },
+    { time: '10:40 - 11:00', title: 'Zahra Datoo', sub: 'The Architecture of Nostalgia', theme: 'past' },
+    
+    { time: '11:00 - 11:20', title: 'Zahra Moledina', sub: "Capitalism's Clock", theme: 'present' },
+    { time: '11:20 - 11:40', title: 'Faizaan', sub: 'Topic TBA', theme: 'present' },
+    { time: '11:40 - 12:00', title: 'Hassan Abbas Mohammed', sub: 'The Procrastination Paradox', theme: 'present' },
+    
+    { time: '12:00 - 13:00', title: 'Lunch & Prayer', sub: 'Nourishment & Reflection', theme: 'present' },
     { time: '13:00 - 13:30', title: 'Interactive Activities', sub: 'The Kahoot Challenge & Energy Boost', theme: 'present' },
-    { time: '13:30 - 14:00', title: 'Liyaan Karbelkar', sub: 'The Legacy We Leave', theme: 'future' },
-    { time: '14:00 - 14:30', title: 'Sada Mbaruk Said', sub: 'Three Clocks: Climate, Animals, AI', theme: 'future' },
+
+    { time: '13:30 - 13:50', title: 'Yunus Osman', sub: 'The Art of Scheduling', theme: 'future' },
+    { time: '13:50 - 14:10', title: 'Sada Mbaruk Said', sub: 'Three Clocks: Climate, Animals, AI', theme: 'future' },
+    { time: '14:10 - 14:30', title: 'Liyaan Karbelkar', sub: 'The Legacy We Leave', theme: 'future' },
+    
     { time: '14:30 - 14:45', title: 'Sponsor Appreciation', sub: 'Gratitude for our Partners', theme: 'future' },
     { time: '14:45 - 15:00', title: 'Closing Manifesto', sub: 'Borrowed Time: The Beginning', theme: 'future' },
   ];

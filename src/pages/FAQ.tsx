@@ -10,8 +10,8 @@ const FAQ_DATA = [
     icon: <Ticket size={18} />,
     questions: [
       {
-        q: "How do I secure a ticket for TEDxAlMuntazir?",
-        a: "Students can register and purchase tickets directly at school between 25th - 10th June. Due to limited venue capacity, tickets are allocated on a first-come, first-served basis."
+        q: "How can I secure a ticket?",
+        a: "Tickets can be purchased directly on this page! Navigate to the 'Get Tickets' section to secure your spot. Please note that tickets are strictly for STUDENTS ONLY. You must present a valid student ID at the door."
       },
       {
         q: "What does my ticket include?",

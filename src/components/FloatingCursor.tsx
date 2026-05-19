@@ -1,65 +1,79 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, useSpring, useMotionValue, AnimatePresence } from 'motion/react';
 
 export default function FloatingCursor() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const [hoverType, setHoverType] = useState<'default' | 'button' | 'text' | 'card' | 'view'>('default');
+  const [hoverType, setHoverType] = useState<'default' | 'button' | 'text'>('default');
   const [magneticPos, setMagneticPos] = useState({ x: 0, y: 0, active: false });
+  const [coordinateText, setCoordinateText] = useState("[ INDEX_00 ]");
 
   const springConfig = { damping: 40, stiffness: 250, mass: 0.8 };
   const smoothX = useSpring(mouseX, springConfig);
   const smoothY = useSpring(mouseY, springConfig);
   
-  // Refined Spring for the ring size and scale
-  const ringScale = useSpring(1, { damping: 20, stiffness: 100 });
-  const [rotation, setRotation] = useState(0);
+  // Base rotation for the sweeping hand
+  const [baseRotation, setBaseRotation] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setRotation(prev => (prev + 1) % 360);
-    }, 50);
-    return () => clearInterval(interval);
+    let lastTime = performance.now();
+    let tickCounter = 0;
+    let animationFrameId: number;
+
+    const animate = (time: number) => {
+      const deltaTime = time - lastTime;
+      lastTime = time;
+
+      setHoverType((currentHover) => {
+        if (currentHover === 'default') {
+          // Continuous buttery smooth sweep (approx 60 deg per second)
+          setBaseRotation(prev => (prev + (deltaTime * 0.06)) % 360);
+        } else if (currentHover === 'text') {
+          // 4Hz Ticking Resistance (moves 4 times a second, jumping)
+          tickCounter += deltaTime;
+          if (tickCounter > 250) { // 250ms = 4Hz
+            setBaseRotation(prev => (prev + 15) % 360);
+            tickCounter = 0;
+          }
+        }
+        return currentHover;
+      });
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrameId);
   }, []);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const interactive = target.closest('button, a, .interactive');
-      const card = target.closest('.group');
-      const view = target.closest('.view-target');
-      
-      if (view) {
-        setHoverType('view');
-        setMagneticPos({ x: 0, y: 0, active: false });
-        ringScale.set(2.5);
-      } else if (card && !interactive) {
-        setHoverType('card');
-        setMagneticPos({ x: 0, y: 0, active: false });
-        ringScale.set(2.5);
-      } else if (interactive) {
+      const text = target.closest('h1, h2, h3, p');
+
+      if (interactive) {
         const rect = interactive.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
         
+        // Update coordinate text based on position to simulate data tracking
+        setCoordinateText(`[ X_${Math.round(centerX)} Y_${Math.round(centerY)} ]`);
+
         const dist = Math.hypot(e.clientX - centerX, e.clientY - centerY);
-        if (dist < 50) {
+        if (dist < 60) {
           setMagneticPos({ x: centerX, y: centerY, active: true });
           setHoverType('button');
-          ringScale.set(1.5);
         } else {
           setMagneticPos({ x: 0, y: 0, active: false });
           setHoverType('button');
-          ringScale.set(1.2);
         }
-      } else if (target.closest('h1, h2, h3, p')) {
+      } else if (text) {
         setHoverType('text');
         setMagneticPos({ x: 0, y: 0, active: false });
-        ringScale.set(2.5);
       } else {
         setHoverType('default');
         setMagneticPos({ x: 0, y: 0, active: false });
-        ringScale.set(1);
       }
 
       mouseX.set(e.clientX);
@@ -71,9 +85,10 @@ export default function FloatingCursor() {
   }, [mouseX, mouseY]);
 
   return (
-    <>
+    <div className="hidden md:block pointer-events-none z-[9999]">
+      {/* 1. The Axle (The Core) */}
       <motion.div
-        className="fixed top-0 left-0 w-1 h-1 bg-brand-secondary rounded-full pointer-events-none z-[400] hidden md:block"
+        className="fixed top-0 left-0 w-1.5 h-1.5 bg-brand-secondary rounded-full"
         style={{
           x: magneticPos.active ? magneticPos.x : mouseX,
           y: magneticPos.active ? magneticPos.y : mouseY,
@@ -81,53 +96,59 @@ export default function FloatingCursor() {
           translateY: '-50%',
         }}
       />
+
+      {/* The Escapement Gear Boundary & Indicator Hand container */}
       <motion.div
-        className="fixed top-0 left-0 rounded-full border border-brand-secondary/30 pointer-events-none z-[400] hidden md:block mix-blend-difference flex items-center justify-center overflow-hidden"
+        className="fixed top-0 left-0 rounded-full flex items-center justify-center overflow-visible"
         style={{
           x: magneticPos.active ? magneticPos.x : smoothX,
           y: magneticPos.active ? magneticPos.y : smoothY,
-          scale: ringScale,
           translateX: '-50%',
           translateY: '-50%',
-          width: 40,
-          height: 40,
+          width: 50,
+          height: 50,
+          borderWidth: 1,
         }}
         animate={{ 
-          backgroundColor: hoverType === 'text' ? 'rgba(255, 255, 255, 1)' : (hoverType === 'card' ? 'rgba(0, 168, 89, 1)' : 'rgba(255, 255, 255, 0)'),
-          borderColor: hoverType === 'button' ? 'rgba(0, 168, 89, 1)' : 'rgba(0, 168, 89, 0.3)',
+          scale: hoverType === 'button' ? 0.4 : (hoverType === 'text' ? 1.5 : 1),
+          borderColor: hoverType === 'button' ? '#006d38' : '#000839', // brand-secondary vs brand-primary
+          backgroundColor: hoverType === 'text' ? '#000839' : 'transparent', // Acts as mask over text
+          mixBlendMode: hoverType === 'text' ? 'difference' : 'normal',
         }}
-        transition={{ type: 'spring', damping: 25, stiffness: 150 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
       >
-        {/* Clock Hand */}
+        {/* 2. The Indicator (The Hand) */}
         <motion.div 
-          className="absolute h-1/2 w-[1px] bg-brand-secondary origin-bottom bottom-1/2"
-          style={{ rotate: rotation }}
+          className="absolute w-[1px] bg-white origin-bottom"
+          style={{ height: '50%', bottom: '50%' }}
+          animate={{
+            rotate: hoverType === 'button' ? 0 : baseRotation,
+            opacity: hoverType === 'button' ? 0 : 1, // Optional: hide hand when snapped tight
+          }}
+          transition={{ 
+            rotate: { type: hoverType === 'button' ? 'spring' : false, stiffness: 300, damping: 20 }
+          }}
         />
-        <div className="absolute w-1 h-1 rounded-full bg-brand-secondary" />
-
-        <AnimatePresence>
-          {hoverType === 'view' && (
-            <motion.span
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              className="absolute font-typewriter text-[8px] uppercase tracking-widest text-brand-secondary font-bold"
-            >
-              EXPLORE
-            </motion.span>
-          )}
-          {hoverType === 'card' && (
-            <motion.span
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              className="text-[4px] font-black uppercase tracking-widest text-white"
-            >
-              DRAG
-            </motion.span>
-          )}
-        </AnimatePresence>
       </motion.div>
-    </>
+
+      {/* 3. Button Hover Data Coordinates */}
+      <AnimatePresence>
+        {hoverType === 'button' && (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 30 }}
+            exit={{ opacity: 0, x: 20 }}
+            className="fixed top-0 left-0 font-typewriter text-[9px] uppercase tracking-[0.2em] text-brand-primary font-bold whitespace-nowrap"
+            style={{
+              x: magneticPos.active ? magneticPos.x : smoothX,
+              y: magneticPos.active ? magneticPos.y : smoothY,
+              translateY: '-50%',
+            }}
+          >
+            {coordinateText}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
