@@ -56,7 +56,7 @@ export default function Typewriter({
               initial={{ opacity: 1 }}
               animate={{ opacity: [1, 0, 1] }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.8, repeat: Infinity, ease: "steps(2)" }}
+              transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
               style={{ backgroundColor: cursorColor }}
               className="inline-block w-[0.15em] h-[1em] ml-1 align-middle"
             />
