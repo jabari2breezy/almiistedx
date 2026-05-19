@@ -8,11 +8,11 @@
   --font-title: "Bricolage Grotesque", sans-serif;
   --font-accent: "Ballet", cursive;
 
-  --color-brand-primary: #050507; /* Dark cinematic background */
+  --color-brand-primary: #050507; /* Main text is dark */
   --color-brand-secondary: #00FF66; /* Neon green accent */
-  --color-brand-background: #08080a; /* Charcoal black */
-  --color-brand-surface: #0a0a0d;
-  --color-brand-outline: rgba(255, 255, 255, 0.1);
+  --color-brand-background: #ffffff; /* Global background is white */
+  --color-brand-surface: #f5f5f5; /* Light surface */
+  --color-brand-outline: rgba(0, 0, 0, 0.1);
 }
 
 @layer base {
@@ -20,7 +20,7 @@
     scroll-behavior: auto; /* Required for Lenis */
   }
   body {
-    @apply bg-brand-background text-[#EBEBEB] selection:bg-brand-secondary selection:text-brand-primary overflow-x-hidden antialiased;
+    @apply bg-brand-background text-brand-primary selection:bg-brand-secondary selection:text-white overflow-x-hidden antialiased;
     font-family: var(--font-sans);
   }
 

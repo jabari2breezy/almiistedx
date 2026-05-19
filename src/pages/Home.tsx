@@ -166,7 +166,7 @@ function ParallaxIcon({ icon: Icon, speed, left, top, delay = 0, size = 120 }: {
   return (
     <motion.div
       style={{ y, left, top }}
-      className="absolute pointer-events-none text-brand-primary"
+      className="absolute pointer-events-none text-white/20"
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
@@ -263,7 +263,7 @@ export default function Home() {
       initial="hidden"
       animate="visible"
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
-      className="relative pt-4"
+      className="relative pt-4 bg-[#08080a] text-[#EBEBEB]"
       ref={containerRef}
     >
       {/* High-End Scroll Progress Bar */}
@@ -281,10 +281,10 @@ export default function Home() {
       <FloatingBackground />
 
       {/* Hero Section */}
-      <div className="min-h-screen flex flex-col relative overflow-hidden bg-brand-primary text-white">
-        <div className="absolute inset-0 z-0 bg-brand-background">
+      <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#050507] text-white">
+        <div className="absolute inset-0 z-0 bg-[#08080a]">
           <FluidBackground />
-          <div className="absolute inset-0 bg-gradient-to-b from-brand-primary/90 via-brand-primary/50 to-brand-primary" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#050507]/90 via-[#050507]/50 to-[#050507]" />
         </div>
         
         {/* Large Decorative "X" Background */}
@@ -326,7 +326,7 @@ export default function Home() {
         </div>
 
         {/* Bottom Bar Info */}
-        <div className="w-full border-t border-white/5 py-12 px-6 md:px-16 relative z-10 bg-brand-primary">
+        <div className="w-full border-t border-white/5 py-12 px-6 md:px-16 relative z-10 bg-[#08080a]">
           <div className="max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
             <div className="flex gap-16 items-center">
               <div className="space-y-1">
@@ -362,7 +362,7 @@ export default function Home() {
       </div>
 
       {/* Marquee Ticker */}
-      <div className="bg-brand-primary py-8 overflow-hidden relative z-20">
+      <div className="bg-[#050507] py-8 overflow-hidden relative z-20">
         <div className="flex gap-12 whitespace-nowrap">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="flex gap-12 shrink-0 animate-marquee text-[10px] font-typewriter uppercase tracking-[0.5em] text-white items-center">
@@ -388,20 +388,20 @@ export default function Home() {
 
 
       {/* Sponsors Strip */}
-      <div className="py-20 border-t border-brand-outline bg-brand-surface/30 px-6 md:px-16 overflow-hidden">
+      <div className="py-20 border-t border-white/10 bg-white/5 px-6 md:px-16 overflow-hidden">
         <div className="max-w-screen-2xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12 opacity-30 grayscale saturate-0">
-          <span className="font-typewriter text-[10px] uppercase tracking-[0.5em] text-brand-primary shrink-0">Our Partners</span>
+          <span className="font-typewriter text-[10px] uppercase tracking-[0.5em] text-white shrink-0">Our Partners</span>
           <div className="flex flex-wrap gap-20 justify-center items-center">
             {/* Empty for now as requested */}
-            <div className="h-8 w-32 border border-dashed border-brand-primary/20 rounded flex items-center justify-center text-[8px] uppercase tracking-widest">Headline Sponsor</div>
-            <div className="h-8 w-32 border border-dashed border-brand-primary/20 rounded flex items-center justify-center text-[8px] uppercase tracking-widest">Supporting Partner</div>
-            <div className="h-8 w-32 border border-dashed border-brand-primary/20 rounded flex items-center justify-center text-[8px] uppercase tracking-widest">Media Partner</div>
+            <div className="h-8 w-32 border border-dashed border-white/20 rounded flex items-center justify-center text-[8px] uppercase tracking-widest text-white">Headline Sponsor</div>
+            <div className="h-8 w-32 border border-dashed border-white/20 rounded flex items-center justify-center text-[8px] uppercase tracking-widest text-white">Supporting Partner</div>
+            <div className="h-8 w-32 border border-dashed border-white/20 rounded flex items-center justify-center text-[8px] uppercase tracking-widest text-white">Media Partner</div>
           </div>
         </div>
       </div>
 
       {/* Social Call to Action */}
-      <section className="py-40 bg-brand-surface border-y border-brand-outline relative overflow-hidden">
+      <section className="py-40 bg-[#0a0a0d] border-y border-white/10 relative overflow-hidden">
         <div className="absolute inset-0 liquid-bg opacity-[0.02] pointer-events-none" />
         <div className="max-w-screen-2xl mx-auto px-6 md:px-16 text-center relative z-10">
           <motion.div
@@ -411,8 +411,8 @@ export default function Home() {
             className="flex flex-col items-center gap-12"
           >
             <div className="space-y-4">
-              <span className="font-typewriter text-xs uppercase tracking-[0.5em] text-brand-primary/30">Spread the Idea</span>
-              <h2 className="text-5xl md:text-8xl font-title font-black uppercase text-brand-primary leading-none tracking-tighter">
+              <span className="font-typewriter text-xs uppercase tracking-[0.5em] text-white/30">Spread the Idea</span>
+              <h2 className="text-5xl md:text-8xl font-title font-black uppercase text-white leading-none tracking-tighter">
                 Share with someone living on <br />
                 <span className="text-brand-secondary italic font-serif lowercase">borrowed time.</span>
               </h2>
