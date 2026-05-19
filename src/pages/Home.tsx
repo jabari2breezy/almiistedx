@@ -7,7 +7,7 @@ import Typewriter from '../components/Typewriter';
 import MaskReveal from '../components/MaskReveal';
 import FloatingBackground from '../components/FloatingBackground';
 import { MechanicalClock, FluidBlob, KineticTypography } from '../components/ModernAnimation';
-import HeroParticles from '../components/HeroParticles';
+import FluidBackground from '../components/FluidBackground';
 import Countdown from '../components/Countdown';
 
 const transition = { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] };
@@ -282,9 +282,9 @@ export default function Home() {
 
       {/* Hero Section */}
       <div className="min-h-screen flex flex-col relative overflow-hidden bg-brand-primary text-white">
-        <div className="absolute inset-0 z-0">
-          <HeroParticles />
-          <div className="absolute inset-0 bg-gradient-to-b from-brand-primary/80 via-brand-primary/40 to-brand-primary" />
+        <div className="absolute inset-0 z-0 bg-brand-background">
+          <FluidBackground />
+          <div className="absolute inset-0 bg-gradient-to-b from-brand-primary/90 via-brand-primary/50 to-brand-primary" />
         </div>
         
         {/* Large Decorative "X" Background */}
@@ -297,10 +297,10 @@ export default function Home() {
             variants={titleVariants}
             className="max-w-7xl mb-12"
           >
-            <h1 className="text-[12vw] md:text-[8vw] font-title font-black leading-[0.8] tracking-tighter uppercase text-white">
+            <h1 className="text-[18vw] md:text-[14vw] font-title font-black leading-[0.75] tracking-tighter uppercase text-white mix-blend-difference">
               TEDX ALMUNTAZIR <br />
               <span className="text-brand-secondary">SCHOOLS YOUTH</span> <br />
-              <span className="opacity-40">2026</span>
+              <span className="opacity-30">2026</span>
             </h1>
           </motion.div>
 
@@ -308,8 +308,8 @@ export default function Home() {
             variants={itemVariants} 
             className="max-w-3xl mb-16"
           >
-             <p className="font-editorial text-3xl md:text-4xl text-white/60 italic leading-[1.1]">
-               We're living on <span className="text-white">BORROWED TIME.</span>
+             <p className="font-editorial text-4xl md:text-6xl text-white/50 italic leading-[1.1]">
+               We're living on <span className="text-white font-medium">BORROWED TIME.</span>
              </p>
           </motion.div>
 
@@ -330,20 +330,20 @@ export default function Home() {
           <div className="max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
             <div className="flex gap-16 items-center">
               <div className="space-y-1">
-                <span className="block font-typewriter text-[9px] uppercase tracking-widest text-white/30">The Date</span>
+                <span className="block font-typewriter text-[9px] uppercase tracking-widest text-white/50">The Date</span>
                 <span className="block font-sans font-bold text-white text-lg">JUNE 14, 2026</span>
               </div>
               <div className="flex-shrink-0 w-[1px] h-10 bg-white/10" />
               <div className="space-y-1">
-                <span className="block font-typewriter text-[9px] uppercase tracking-widest text-white/30">The Venue</span>
+                <span className="block font-typewriter text-[9px] uppercase tracking-widest text-white/50">The Venue</span>
                 <span className="block font-sans font-bold text-white text-lg uppercase">Nursery Campus, Upanga</span>
               </div>
             </div>
 
-            <div className="flex gap-12 items-center opacity-40">
+            <div className="flex gap-12 items-center opacity-60">
               <div className="text-right">
-                <span className="block font-typewriter text-[9px] uppercase tracking-widest">8+ Speakers</span>
-                <span className="block font-typewriter text-[9px] uppercase tracking-widest">1 Inspiring Day</span>
+                <span className="block font-typewriter text-[9px] uppercase tracking-widest text-white">8+ Speakers</span>
+                <span className="block font-typewriter text-[9px] uppercase tracking-widest text-white">1 Inspiring Day</span>
               </div>
             </div>
           </div>
@@ -351,12 +351,12 @@ export default function Home() {
       </div>
 
       {/* Hourglass Scroll Interaction Indicator */}
-      <div className="fixed right-8 top-1/2 -translate-y-1/2 h-40 w-1 bg-white/5 z-[60] hidden xl:block overflow-hidden rounded-full">
+      <div className="fixed right-8 top-1/2 -translate-y-1/2 h-40 w-1 bg-white/10 z-[60] hidden xl:block overflow-hidden rounded-full">
         <motion.div 
           className="w-full bg-brand-secondary origin-top"
           style={{ height: hourglassBottom }}
         />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 font-typewriter text-[8px] uppercase tracking-widest text-white/20 vertical-text -translate-y-12">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 font-typewriter text-[8px] uppercase tracking-widest text-white/40 vertical-text -translate-y-12">
           Time Spent
         </div>
       </div>
@@ -422,14 +422,14 @@ export default function Home() {
                <a 
                  href={`https://wa.me/?text=${encodeURIComponent("Join us at TEDxAlMuntazirSchoolsYouth 2026: Borrowed Time. June 14, 2026. " + window.location.origin)}`} 
                  target="_blank" rel="noopener noreferrer"
-                 className="px-12 py-5 bg-white border border-brand-outline rounded-full font-typewriter text-[10px] uppercase tracking-[0.3em] hover:bg-brand-primary hover:text-white transition-all shadow-xl shadow-black/5"
+                 className="px-12 py-5 bg-transparent border border-white/20 text-white rounded-full font-typewriter text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all shadow-xl shadow-black/5"
                >
                  WhatsApp
                </a>
                <a 
                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("I'm attending TEDxAlMuntazirSchoolsYouth 2026. Join me! #BorrowedTime #TEDx")}&url=${encodeURIComponent(window.location.origin)}`} 
                  target="_blank" rel="noopener noreferrer"
-                 className="px-12 py-5 bg-white border border-brand-outline rounded-full font-typewriter text-[10px] uppercase tracking-[0.3em] hover:bg-brand-primary hover:text-white transition-all shadow-xl shadow-black/5"
+                 className="px-12 py-5 bg-transparent border border-white/20 text-white rounded-full font-typewriter text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all shadow-xl shadow-black/5"
                >
                  Twitter
                </a>

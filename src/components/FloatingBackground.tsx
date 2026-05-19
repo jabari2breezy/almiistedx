@@ -15,7 +15,7 @@ interface FloatingItemProps {
 const FloatingItem = ({ icon: Icon, top, left, speed, size, rotate = 0 }: FloatingItemProps) => {
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], [0, speed * 1000]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.1, 0.2, 0.2, 0.1]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.05, 0.1, 0.1, 0.05]);
   
   // High-end depth effect: Blur increases with speed/distance
   const blur = Math.abs(speed) * 40;
