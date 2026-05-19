@@ -1,155 +1,132 @@
-import { motion } from 'motion/react';
-import { Quote, ShieldAlert, Sparkles, Zap, Clock as ClockIcon } from 'lucide-react';
-import { MechanicalClock } from '../components/ModernAnimation';
-
-const transition = { duration: 1.2, ease: [0.76, 0, 0.24, 1] as const };
+import React from 'react';
+import { motion, useScroll, useTransform } from 'motion/react';
+import { Link } from 'react-router-dom';
 
 export default function Theme() {
+  const { scrollYProgress } = useScroll();
+  
+  // Parallax effects
+  const y1 = useTransform(scrollYProgress, [0, 1], [0, -200]);
+  const y2 = useTransform(scrollYProgress, [0, 1], [0, -400]);
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1, delayChildren: 0.3 }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 50 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "circOut" as const } }
+  };
+
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="bg-brand-background"
-    >
-      {/* Hero Section */}
-      <section className="pt-40 pb-20 px-6 md:px-16 max-w-screen-2xl mx-auto">
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={transition}
+    <div className="min-h-screen bg-brand-background text-brand-primary pt-32 pb-24 px-6 md:px-16 overflow-hidden">
+      
+      {/* Structural Decorative Line */}
+      <motion.div 
+        initial={{ scaleY: 0 }}
+        animate={{ scaleY: 1 }}
+        transition={{ duration: 1.5, ease: "circOut" }}
+        className="fixed left-6 md:left-16 top-0 w-px h-full bg-brand-outline/20 origin-top pointer-events-none z-0"
+      />
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        
+        {/* HERO STATEMENT */}
+        <motion.section 
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="mb-40 md:mb-64 pt-20"
         >
-          <div className="font-typewriter text-[10px] text-brand-secondary tracking-[1em] uppercase mb-12">The Manifesto</div>
-          <h1 className="text-[14vw] font-title font-black tracking-tighter leading-[0.75] uppercase flex flex-col mb-20 text-brand-primary">
-            <span>Borrowed</span>
-            <span className="italic font-editorial lowercase -ml-6 text-brand-secondary">Time.</span>
-          </h1>
+          <motion.div variants={item} className="mb-8">
+             <span className="font-typewriter text-[10px] tracking-[0.4em] uppercase text-brand-secondary border border-brand-secondary/30 px-3 py-1">The Paradigm</span>
+          </motion.div>
+          <motion.h1 variants={item} className="text-6xl md:text-[8vw] font-title font-black uppercase leading-[0.85] tracking-tighter mix-blend-difference text-brand-primary">
+            Borrowed <br/>
+            <span className="text-brand-secondary">But Not</span> <br/>
+            Wasted.
+          </motion.h1>
+          <motion.div variants={item} className="mt-12 md:ml-auto md:w-1/2">
+            <p className="font-editorial text-2xl md:text-4xl leading-tight text-brand-primary/80 italic">
+              "None of us choose our arrival and departure in this world. Between those two moments lies everything."
+            </p>
+          </motion.div>
+        </motion.section>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-20">
-            <div className="lg:col-span-1 hidden lg:block">
-              <div className="rotate-90 origin-top-left font-typewriter text-[9px] uppercase tracking-[1em] text-brand-primary/20 whitespace-nowrap pt-4 underline underline-offset-[12px] decoration-brand-secondary">
-                THE PREMISE
-              </div>
-            </div>
-            
-            <div className="lg:col-span-11 space-y-12">
-              <p className="font-editorial text-4xl md:text-7xl font-medium tracking-tight text-brand-primary leading-[0.9] italic lowercase">
-                None of us <span className="text-brand-secondary not-italic font-title font-black uppercase inline-block pr-6">choose</span> our arrival and departure in this world. Between those two moments lies everything.
+        {/* PHILOSOPHY BLOCKS */}
+        <section className="space-y-32 md:space-y-48">
+          
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <motion.div 
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-20%" }}
+              transition={{ duration: 0.8 }}
+              className="order-2 md:order-1"
+            >
+              <h2 className="text-4xl md:text-5xl font-title font-bold uppercase mb-6 leading-none">The Accumulation<br/>Of Decisions</h2>
+              <p className="font-editorial text-xl leading-relaxed text-brand-primary/70">
+                History has never been shaped by a single grand gesture. It's been shaped by the accumulation of a million ordinary decisions made by ordinary people. The question was never how much time they had. It was what they did with it.
               </p>
-              <div className="h-[2px] w-24 bg-brand-secondary" />
-              <p className="font-sans text-2xl text-brand-primary/70 leading-relaxed max-w-3xl">
-                We're all living on borrowed time. But borrowed time isn't wasted time. 
-                History's most defining moments were shaped by people who understood the weight of their moment, 
-                people who looked at the world as it was and dared to imagine what it could become.
-              </p>
-            </div>
+            </motion.div>
+            <motion.div 
+              style={{ y: y1 }}
+              className="order-1 md:order-2 bg-brand-surface border-l-4 border-brand-secondary p-12 aspect-square flex items-center justify-center relative overflow-hidden"
+            >
+              <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMOCA4Wk04IDBMMCA4WiIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjEiPjwvcGF0aD4KPC9zdmc+')] mix-blend-overlay"></div>
+              <span className="font-title text-9xl font-black text-brand-primary/10">01</span>
+            </motion.div>
           </div>
-        </motion.div>
-      </section>
 
-      {/* Main Philosophy Section */}
-      <section className="py-40 bg-brand-primary text-white overflow-hidden relative">
-        <div className="absolute inset-0 liquid-bg opacity-10" />
-        <div className="px-6 md:px-16 max-w-screen-2xl mx-auto relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <motion.div
-              initial={{ x: -50, opacity: 0 }}
-              whileInView={{ x: 0, opacity: 1 }}
-              viewport={{ once: true }}
-              transition={transition}
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <motion.div 
+              style={{ y: y2 }}
+              className="bg-brand-primary text-brand-background p-12 aspect-square flex flex-col justify-between relative overflow-hidden"
             >
-              <h2 className="text-6xl md:text-8xl font-title font-black tracking-tighter uppercase leading-none mb-12">
-                Accumulation <br /> Of <span className="text-brand-secondary">Decisions.</span>
-              </h2>
-              <p className="font-editorial text-2xl md:text-3xl text-white/60 italic leading-tight mb-8">
-                "History has never been shaped by a single grand gesture. It's been shaped by the accumulation of a million ordinary decisions made by ordinary people."
-              </p>
-              <p className="font-typewriter text-[10px] uppercase tracking-[0.5em] text-brand-secondary">
-                The question isn't how much time we have. It's what we do with it.
+              <span className="font-typewriter text-xs tracking-widest opacity-50">CRITICAL INQUIRY</span>
+              <h3 className="font-title text-4xl uppercase font-black leading-none">A Warming Planet & Artificial Minds</h3>
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-20%" }}
+              transition={{ duration: 0.8 }}
+            >
+              <h2 className="text-4xl md:text-5xl font-title font-bold uppercase mb-6 leading-none">To Inherit &<br/>Reimagine</h2>
+              <p className="font-editorial text-xl leading-relaxed text-brand-primary/70">
+                We'll explore what it actually means to live responsibly on a warming planet. To grow up alongside artificial intelligence without losing what makes us human. To pursue peace in a world that keeps making war feel inevitable. To inherit systems you didn't design and decide whether to maintain them or reimagine them entirely.
               </p>
             </motion.div>
-            <div className="relative">
-                <div className="absolute -inset-20 bg-brand-secondary/20 blur-[100px] rounded-full animate-pulse" />
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
-                  className="relative opacity-20"
-                >
-                  <MechanicalClock className="w-[400px] h-[400px] text-white" />
-                </motion.div>
-            </div>
           </div>
-        </div>
-      </section>
 
-      {/* The Invitations */}
-      <section className="py-40 px-6 md:px-16 max-w-screen-2xl mx-auto">
-        <div className="flex items-center gap-4 mb-20">
-          <ShieldAlert size={20} className="text-brand-secondary" />
-          <h3 className="font-typewriter text-[10px] uppercase tracking-[0.5em] text-brand-primary/40">The Inciting Questions</h3>
-        </div>
+        </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-brand-outline">
-          {[
-            { 
-              title: 'Warming Planet', 
-              icon: <Zap size={24} />,
-              text: 'What it actually means to live responsibly on a warming planet. Navigating ecological urgency.' 
-            },
-            { 
-              title: 'Artificial Intelligence', 
-              icon: <Sparkles size={24} />,
-              text: 'To grow up alongside artificial intelligence without losing what makes us human.' 
-            },
-            { 
-              title: 'Pursuing Peace', 
-              icon: <ClockIcon size={24} />,
-              text: 'To pursue peace in a world that keeps making war feel inevitable.' 
-            },
-            { 
-              title: 'Reimagining Systems', 
-              icon: <Quote size={24} />,
-              text: 'To inherit systems you didn\'t design and decide whether to maintain them or reimagine them entirely.' 
-            }
-          ].map((item, i) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="bg-brand-background p-12 group hover:bg-brand-surface transition-colors"
-            >
-              <div className="text-brand-secondary mb-8 group-hover:scale-110 transition-transform origin-left">{item.icon}</div>
-              <h4 className="font-title text-4xl font-black uppercase tracking-tighter mb-4 text-brand-primary">{item.title}</h4>
-              <p className="font-editorial text-xl italic text-brand-primary/60 leading-tight">{item.text}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+        {/* KINETIC CTA */}
+        <motion.section 
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, ease: "backOut" }}
+          className="mt-40 md:mt-64 border-t-2 border-brand-primary pt-20 text-center relative"
+        >
+          <p className="font-typewriter text-xs uppercase tracking-[0.3em] text-brand-secondary mb-8">Not a conference about doom.</p>
+          <h2 className="text-5xl md:text-7xl font-title font-black uppercase tracking-tighter leading-none mb-12">
+            The clock's ticking.<br/>
+            The stage is yours.
+          </h2>
+          <Link 
+            to="/tickets" 
+            className="inline-flex items-center justify-center px-12 py-6 bg-brand-primary text-brand-background font-title font-bold uppercase tracking-widest hover:bg-brand-secondary hover:text-white transition-all duration-500 rounded-sm"
+          >
+            What will you do with the time that's left?
+          </Link>
+        </motion.section>
 
-      {/* Final Call */}
-      <section className="py-40 px-6 md:px-16 border-t border-brand-outline bg-brand-surface">
-        <div className="max-w-4xl mx-auto text-center">
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              whileInView={{ scale: 1, opacity: 1 }}
-              viewport={{ once: true }}
-              className="space-y-12"
-            >
-              <h2 className="text-5xl md:text-8xl font-title font-black tracking-tighter leading-[0.8] uppercase text-brand-primary">
-                A conference about <span className="text-brand-secondary italic">Urgency,</span> not doom.
-              </h2>
-              <p className="font-editorial text-2xl md:text-4xl italic text-brand-primary/40 leading-tight">
-                "And the extraordinary things that humans do when they feel it."
-              </p>
-              <div className="pt-20">
-                <div className="font-typewriter text-[12px] uppercase tracking-[1em] text-brand-secondary animate-pulse mb-8">The clock's ticking.</div>
-                <div className="text-[12vw] font-title font-black uppercase tracking-tighter text-brand-primary opacity-5 select-none leading-none">THE STAGE IS YOURS</div>
-              </div>
-            </motion.div>
-        </div>
-      </section>
-    </motion.div>
+      </div>
+    </div>
   );
 }
