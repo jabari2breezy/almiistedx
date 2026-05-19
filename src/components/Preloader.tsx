@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import Spline from '@splinetool/react-spline';
+import { Canvas } from '@react-three/fiber';
+import { Environment } from '@react-three/drei';
+import Hourglass3D from './Hourglass3D';
 
 interface PreloaderProps {
   onComplete: () => void;
@@ -11,10 +13,6 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasWrapperRef = useRef<HTMLDivElement>(null);
   const percentageRef = useRef<HTMLDivElement>(null);
-  
-  // A generic placeholder URL for the Spline scene. 
-  // Replace this with your actual exported Spline URL for the hourglass.
-  const SPLINE_URL = "https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode";
 
   useEffect(() => {
     if (!containerRef.current || !canvasWrapperRef.current || !percentageRef.current) return;
@@ -87,7 +85,13 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         id="hourglass-canvas"
         className="absolute inset-0 w-full h-full flex items-center justify-center"
       >
-        <Spline scene={SPLINE_URL} />
+        <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
+          <ambientLight intensity={1} />
+          <directionalLight position={[10, 10, 5]} intensity={2} />
+          <directionalLight position={[-10, 5, -5]} intensity={0.5} color="#ffaa55" />
+          <Hourglass3D />
+          <Environment preset="studio" />
+        </Canvas>
       </div>
 
       {/* Loading Percentage Text */}
