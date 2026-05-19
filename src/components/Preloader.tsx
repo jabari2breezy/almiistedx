@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { Canvas } from '@react-three/fiber';
 import { Environment } from '@react-three/drei';
+import { EffectComposer, Bloom, DepthOfField } from '@react-three/postprocessing';
 import Hourglass3D from './Hourglass3D';
 
 interface PreloaderProps {
@@ -86,11 +87,15 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         className="absolute inset-0 w-full h-full flex items-center justify-center"
       >
         <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
-          <ambientLight intensity={1} />
-          <directionalLight position={[10, 10, 5]} intensity={2} />
-          <directionalLight position={[-10, 5, -5]} intensity={0.5} color="#ffaa55" />
+          <ambientLight intensity={1.5} />
+          <directionalLight position={[10, 10, 5]} intensity={3} />
+          <directionalLight position={[-10, 5, -5]} intensity={1} color="#ffaa55" />
           <Hourglass3D />
           <Environment preset="studio" />
+          <EffectComposer>
+            <Bloom luminanceThreshold={0.8} luminanceSmoothing={0.9} height={300} intensity={1.5} />
+            <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={480} />
+          </EffectComposer>
         </Canvas>
       </div>
 

@@ -11,6 +11,7 @@ import SpeakersPage from './pages/Speakers';
 import About from './pages/About';
 import Agenda from './pages/Agenda';
 import FAQ from './pages/FAQ';
+import Tickets from './pages/Tickets';
 import Footer from './components/Footer';
 import Loader3D from './components/Loader3D';
 import ScrollToTopButton from './components/ScrollToTopButton';
@@ -44,6 +45,7 @@ function AnimatedRoutes() {
           <Route path="/about" element={<About />} />
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/tickets" element={<Tickets />} />
         </Routes>
       </motion.div>
     </AnimatePresence>

@@ -321,6 +321,9 @@ export default function Home() {
           </motion.div>
 
           <motion.div variants={itemVariants} className="hero-text flex flex-col md:flex-row gap-8 items-center">
+            <Link to="/tickets" className="px-12 py-5 bg-white text-black rounded-full font-typewriter text-[10px] uppercase tracking-[0.3em] hover:bg-brand-secondary transition-all shadow-xl shadow-white/5">
+              Get Your Tickets
+            </Link>
             <Link to="/theme" className="group flex items-center gap-4 font-typewriter text-[11px] uppercase tracking-[0.4em] text-white hover:text-brand-secondary transition-colors">
               Explore the Theme
               <div className="w-12 h-[1px] bg-white/20 group-hover:bg-brand-secondary group-hover:w-16 transition-all" />
