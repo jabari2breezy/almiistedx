@@ -1,9 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { Canvas } from '@react-three/fiber';
-import { Environment } from '@react-three/drei';
-import { EffectComposer, Bloom, DepthOfField } from '@react-three/postprocessing';
-import Hourglass3D from './Hourglass3D';
 
 interface PreloaderProps {
   onComplete: () => void;
@@ -12,60 +8,83 @@ interface PreloaderProps {
 export default function Preloader({ onComplete }: PreloaderProps) {
   const [isMounted, setIsMounted] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
-  const canvasWrapperRef = useRef<HTMLDivElement>(null);
-  const percentageRef = useRef<HTMLDivElement>(null);
-
+  const bluePanelRef = useRef<HTMLDivElement>(null);
+  
   useEffect(() => {
-    if (!containerRef.current || !canvasWrapperRef.current || !percentageRef.current) return;
+    if (!containerRef.current || !bluePanelRef.current) return;
 
-    // Use a GSAP context to ensure animations are properly cleaned up
     let ctx = gsap.context(() => {
       const tl = gsap.timeline({
         onComplete: () => {
-          // Unmount the preloader from the DOM completely to save GPU/RAM
           setIsMounted(false);
           onComplete();
         }
       });
 
-      // 1. Fade in the 3D Canvas
-      tl.fromTo(canvasWrapperRef.current, 
-        { opacity: 0 }, 
-        { opacity: 1, duration: 0.5 }
-      )
-      // 2. Animate your loading percentage text
-      .to(percentageRef.current, {
+      // Loading percentage animation runs in parallel
+      gsap.to(".loading-percentage", {
         innerHTML: 100,
-        duration: 2,
+        duration: 2.2,
         ease: "power2.out",
-        snap: { innerHTML: 1 }, // Snaps the number to whole integers
+        snap: { innerHTML: 1 },
         onUpdate: function() {
-          if (percentageRef.current) {
-            percentageRef.current.innerHTML = Math.round(this.targets()[0].innerHTML) + '%';
-          }
+          const targets = this.targets();
+          if (targets[0]) targets[0].innerHTML = Math.round(targets[0].innerHTML) + '%';
         }
+      });
+
+      // Phase 1: The Broken Present
+      // Massive typography shears out from invisible layout grids
+      tl.from(".hero-text-anim", {
+        yPercent: 120,
+        duration: 1.2,
+        ease: "expo.out",
+        stagger: 0.1
       })
-      // 3. Scale up and explode the particles (triggering the internal 3D animation context)
-      .to(canvasWrapperRef.current, { 
-        scale: 3, 
-        opacity: 0, 
-        duration: 1, 
-        ease: "power4.in" 
+
+      // Phase 2: The Sliding Inversion
+      // The deep blue plate slides aggressively over the text
+      .to(bluePanelRef.current, {
+        clipPath: 'inset(0% 0% 0% 0%)',
+        duration: 1.2,
+        ease: "power4.inOut"
+      }, "-=0.6")
+      
+      // Minimalist data strings slide out from the margins
+      .from(".data-string", {
+        yPercent: 100,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+        stagger: 0.1
+      }, "-=0.8")
+
+      // Phase 3: The Elastic Collapse
+      // Snap vertically toward the horizontal center line
+      .to(containerRef.current, {
+        scaleY: 0.002, // Compress into a razor-thin ribbon
+        transformOrigin: "center center",
+        duration: 0.8,
+        ease: "expo.inOut"
+      }, "+=0.4")
+      
+      // The Full Reveal
+      // Ribbon scales up past the screen lens
+      .to(containerRef.current, {
+        scaleY: 100, // Blow past viewport
+        opacity: 0,
+        duration: 0.8,
+        ease: "power4.inOut"
       })
-      // 4. Wipe away the preloader overlay to reveal the hero section
-      .to(containerRef.current, { 
-        yPercent: -100, 
-        duration: 0.8, 
-        ease: "power4.inOut" 
-      }, "-=0.5")
-      // 5. Stagger reveal the main landing page typography
+
+      // Stagger reveal the main landing page typography
       .from(".hero-text", {
         y: 50,
         opacity: 0,
         stagger: 0.1,
         duration: 1,
         ease: "power3.out"
-      }, "-=0.3");
+      }, "-=0.6");
 
     }, containerRef);
 
@@ -78,46 +97,51 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     <div 
       ref={containerRef}
       id="preloader-overlay"
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black overflow-hidden pointer-events-auto"
+      className="fixed inset-0 z-[9999] bg-[#050507] overflow-hidden flex flex-col justify-center pointer-events-auto origin-center will-change-transform"
     >
-      {/* 3D Canvas Wrapper */}
-      <div 
-        ref={canvasWrapperRef}
-        id="hourglass-canvas"
-        className="absolute inset-0 w-full h-full flex items-center justify-center"
-      >
-        <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
-          <ambientLight intensity={1.5} />
-          <directionalLight position={[10, 10, 5]} intensity={3} />
-          <directionalLight position={[-10, 5, -5]} intensity={1} color="#ffaa55" />
-          <Hourglass3D />
-          <Environment preset="studio" />
-          <EffectComposer>
-            <Bloom luminanceThreshold={0.8} luminanceSmoothing={0.9} height={300} intensity={1.5} />
-            <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={480} />
-          </EffectComposer>
-        </Canvas>
+      {/* Base Layer: Black Canvas */}
+      <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-24 pointer-events-none">
+        <div className="overflow-hidden">
+          <h1 className="hero-text-anim text-[16vw] md:text-[14vw] font-title font-black uppercase text-white leading-[0.8] tracking-tighter">
+            BORROWED
+          </h1>
+        </div>
+        <div className="overflow-hidden flex justify-end">
+          <h1 className="hero-text-anim text-[16vw] md:text-[14vw] font-title font-black uppercase text-brand-secondary leading-[0.8] tracking-tighter">
+            TIME
+          </h1>
+        </div>
       </div>
 
-      {/* Loading Percentage Text */}
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-10">
-        <div 
-          ref={percentageRef}
-          id="loading-percentage"
-          className="font-typewriter text-4xl text-white font-bold tracking-widest"
-        >
-          0
+      {/* Deep Blue Sliding Overlay Layer */}
+      <div 
+        ref={bluePanelRef} 
+        className="absolute inset-0 bg-[#001B44] flex flex-col justify-center px-6 md:px-24 overflow-hidden pointer-events-none will-change-transform" 
+        style={{ clipPath: 'inset(0% 100% 0% 0%)' }}
+      >
+        {/* Micro-Typography Data Stamps */}
+        <div className="absolute top-12 right-12 md:right-24 overflow-hidden">
+          <span className="data-string block font-typewriter text-xs tracking-widest text-white/50 uppercase">
+            DAR ES SALAAM / 2026
+          </span>
         </div>
-        <div className="font-typewriter text-[9px] uppercase tracking-[0.5em] text-white/50 text-center mt-2">
-          Initializing
+        <div className="absolute bottom-12 left-12 md:left-24 overflow-hidden">
+          <span className="data-string loading-percentage block font-typewriter text-4xl font-bold tracking-widest text-white">
+            0%
+          </span>
         </div>
-      </div>
-      
-      {/* Optional: Static Faint Typography in the background as requested */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5 mix-blend-screen z-0">
-        <h1 className="text-[15vw] font-title font-black uppercase text-white whitespace-nowrap">
-          BORROWED TIME
-        </h1>
+
+        {/* Color Inverted Typography */}
+        <div className="overflow-hidden">
+          <h1 className="text-[16vw] md:text-[14vw] font-title font-black uppercase text-white leading-[0.8] tracking-tighter">
+            BORROWED
+          </h1>
+        </div>
+        <div className="overflow-hidden flex justify-end">
+          <h1 className="text-[16vw] md:text-[14vw] font-title font-black uppercase text-[#00081A] leading-[0.8] tracking-tighter">
+            TIME
+          </h1>
+        </div>
       </div>
     </div>
   );
