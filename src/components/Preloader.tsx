@@ -116,7 +116,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       {/* Deep Blue Sliding Overlay Layer */}
       <div 
         ref={bluePanelRef} 
-        className="absolute inset-0 bg-[#001B44] flex flex-col justify-center px-6 md:px-24 overflow-hidden pointer-events-none will-change-transform" 
+        className="absolute inset-0 bg-brand-primary flex flex-col justify-center px-6 md:px-24 overflow-hidden pointer-events-none will-change-transform" 
         style={{ clipPath: 'inset(0% 100% 0% 0%)' }}
       >
         {/* Micro-Typography Data Stamps */}
@@ -138,7 +138,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
           </h1>
         </div>
         <div className="overflow-hidden flex justify-end">
-          <h1 className="text-[16vw] md:text-[14vw] font-title font-black uppercase text-[#00081A] leading-[0.8] tracking-tighter">
+          <h1 className="text-[16vw] md:text-[14vw] font-title font-black uppercase text-[#0c1012] leading-[0.8] tracking-tighter">
             TIME
           </h1>
         </div>

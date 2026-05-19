@@ -13,7 +13,6 @@ import Agenda from './pages/Agenda';
 import FAQ from './pages/FAQ';
 import Tickets from './pages/Tickets';
 import Footer from './components/Footer';
-import Loader3D from './components/Loader3D';
 import ScrollToTopButton from './components/ScrollToTopButton';
 import { useEffect } from 'react';
 import Lenis from 'lenis';
@@ -92,7 +91,6 @@ export default function App() {
           
           {/* Oryzo-style scanline overlay */}
           <div className="fixed inset-0 pointer-events-none z-[100] opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[size:100%_2px,3px_100%]" />
-          <Loader3D />
           <ScrollToTopButton />
         </div>
     </Router>
