@@ -278,7 +278,8 @@ app.post('/api/buy-ticket', async (req, res) => {
       image = await jimp.read(templatePath);
       // We assume the user provided a clean template without the number.
       // We will place the number at the bottom right.
-      const font = await jimp.loadFont(jimp.FONT_SANS_64_WHITE);
+      const fontPath = path.join(__dirname, 'fonts', 'open-sans-64-white.fnt');
+      const font = await jimp.loadFont(fontPath);
       // Hardcoded coordinates that usually work for standard HD layouts
       const imageWidth = image.bitmap.width;
       const imageHeight = image.bitmap.height;
@@ -287,7 +288,8 @@ app.post('/api/buy-ticket', async (req, res) => {
       // Fallback: create a blank black ticket safely
       const JimpConstructor = (jimp as any).Jimp || jimp;
       image = new JimpConstructor(1200, 400, 0x0c1012FF);
-      const font = await jimp.loadFont(jimp.FONT_SANS_64_WHITE);
+      const fontPath = path.join(__dirname, 'fonts', 'open-sans-64-white.fnt');
+      const font = await jimp.loadFont(fontPath);
       image.print(font, 50, 50, "TEDxAlMuntazirSchoolsYouth");
       image.print(font, 50, 200, `TICKET NO. ${ticketNumber}`);
       image.print(font, 50, 300, `ADMIT: ${name}`);

@@ -1,116 +1,222 @@
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'motion/react';
+import React, { useEffect, useState } from 'react';
+import { motion, useAnimation } from 'motion/react';
 import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 
 export default function Theme() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  
-  // Create a 4-screen-tall scrolling container
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
+  const topHalfControls = useAnimation();
+  const bottomHalfControls = useAnimation();
+  const manifestoControls = useAnimation();
+  const [sequenceComplete, setSequenceComplete] = useState(false);
 
-  // --- STORY SEQUENCE MATH ---
-  
-  // Phase 1 (0 to 0.25): Intro "BORROWED TIME" fades and scales up
-  const introOpacity = useTransform(scrollYProgress, [0, 0.15, 0.25], [1, 1, 0]);
-  const introScale = useTransform(scrollYProgress, [0, 0.25], [1, 1.5]);
+  useEffect(() => {
+    const runSequence = async () => {
+      // Phase 1: Wait 1 second
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-  // Phase 2 (0.2 to 0.5): The Core Problem
-  const problemOpacity = useTransform(scrollYProgress, [0.2, 0.3, 0.45, 0.5], [0, 1, 1, 0]);
-  const problemY = useTransform(scrollYProgress, [0.2, 0.3], [50, 0]);
-  const problemScale = useTransform(scrollYProgress, [0.2, 0.5], [0.95, 1.05]);
+      // Phase 2: The Fracture
+      topHalfControls.start({ 
+        y: '-35vh', 
+        transition: { duration: 2, ease: [0.85, 0, 0.15, 1] } 
+      });
+      await bottomHalfControls.start({ 
+        y: '35vh', 
+        transition: { duration: 2, ease: [0.85, 0, 0.15, 1] } 
+      });
 
-  // Phase 3 (0.45 to 0.75): The Accumulation / Philosophy
-  const accumOpacity = useTransform(scrollYProgress, [0.45, 0.55, 0.7, 0.75], [0, 1, 1, 0]);
-  const accumY = useTransform(scrollYProgress, [0.45, 0.55], [50, 0]);
+      // Phase 3: The Revelation
+      await manifestoControls.start({ 
+        opacity: 1, 
+        scale: 1, 
+        filter: "blur(0px)",
+        transition: { duration: 1.5, ease: "easeOut" } 
+      });
 
-  // Phase 4 (0.7 to 1): The CTA
-  const ctaOpacity = useTransform(scrollYProgress, [0.7, 0.85], [0, 1]);
-  const ctaY = useTransform(scrollYProgress, [0.7, 0.85], [50, 0]);
+      setSequenceComplete(true);
+    };
+
+    runSequence();
+  }, [topHalfControls, bottomHalfControls, manifestoControls]);
 
   return (
-    <div ref={containerRef} className="h-[400vh] bg-brand-background text-brand-primary relative">
+    <div className="bg-brand-background min-h-screen text-brand-primary font-sans overflow-x-hidden">
       
-      {/* Sticky Canvas - Remains locked to viewport while scrolling down the 400vh container */}
-      <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden px-6 md:px-16">
+      {/* THE FRACTURE SEQUENCE HERO */}
+      <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-brand-background">
         
-        {/* Decorative subtle noise/gradient overlay for premium feel */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.02] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMOCA4Wk04IDBMMCA4WiIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjEiPjwvcGF0aD4KPC9zdmc+')] mix-blend-overlay z-0" />
-
-        {/* Phase 1: Intro */}
+        {/* TOP HALF TEXT */}
         <motion.div 
-          style={{ opacity: introOpacity, scale: introScale }}
-          className="absolute inset-0 flex flex-col items-center justify-center text-center z-10"
+          animate={topHalfControls}
+          initial={{ y: 0 }}
+          className="absolute inset-0 flex items-center justify-center overflow-hidden z-20 pointer-events-none"
+          style={{ clipPath: 'polygon(0 0, 100% 0, 100% 50%, 0 50%)' }}
         >
-          <span className="font-typewriter text-[10px] md:text-xs tracking-[0.5em] uppercase text-brand-secondary mb-6 md:mb-10 opacity-70">
-            The Theme
-          </span>
-          <h1 className="text-[18vw] md:text-[14vw] font-title font-black uppercase leading-[0.8] tracking-tighter text-brand-primary drop-shadow-2xl">
+          <h1 className="text-[15vw] md:text-[12vw] font-title font-black uppercase leading-none tracking-tighter text-brand-primary">
             Borrowed<br/>Time.
           </h1>
-          
-          {/* Scroll Indicator */}
-          <motion.div 
-            animate={{ y: [0, 10, 0], opacity: [0.3, 1, 0.3] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-12 font-typewriter text-[9px] tracking-[0.4em] uppercase text-brand-primary/40"
-          >
-            Scroll to uncover
-          </motion.div>
         </motion.div>
 
-        {/* Phase 2: The Core Problem */}
+        {/* BOTTOM HALF TEXT */}
         <motion.div 
-          style={{ opacity: problemOpacity, y: problemY, scale: problemScale }}
-          className="absolute inset-0 flex flex-col items-center justify-center text-center max-w-5xl mx-auto px-4 z-10 pointer-events-none"
+          animate={bottomHalfControls}
+          initial={{ y: 0 }}
+          className="absolute inset-0 flex items-center justify-center overflow-hidden z-20 pointer-events-none"
+          style={{ clipPath: 'polygon(0 50%, 100% 50%, 100% 100%, 0 100%)' }}
         >
-          <p className="font-editorial text-4xl md:text-6xl lg:text-7xl text-brand-primary leading-[1.1] md:leading-[1.1] italic">
-            "None of us choose our arrival and departure in this world. <br className="hidden md:block"/>
-            <span className="text-brand-secondary font-medium block mt-4 md:mt-8">Between those two moments lies everything.</span>"
+          <h1 className="text-[15vw] md:text-[12vw] font-title font-black uppercase leading-none tracking-tighter text-brand-primary">
+            Borrowed<br/>Time.
+          </h1>
+        </motion.div>
+
+        {/* GLOWING CRACK (Reveals during fracture) */}
+        <motion.div
+          animate={manifestoControls}
+          initial={{ opacity: 0, scale: 0.8, filter: "blur(10px)" }}
+          className="absolute inset-0 flex flex-col items-center justify-center px-6 z-10"
+        >
+          <span className="font-typewriter text-[10px] md:text-xs tracking-[0.5em] uppercase text-brand-secondary mb-6 border border-brand-secondary/30 px-4 py-1 rounded-full bg-brand-secondary/10">
+            The Truth
+          </span>
+          <p className="font-editorial text-3xl md:text-5xl lg:text-6xl max-w-5xl text-center text-brand-primary italic leading-tight">
+            "None of us choose our arrival and departure in this world. Between those two moments lies everything."
           </p>
         </motion.div>
 
-        {/* Phase 3: The Accumulation */}
+        {/* SCROLL INDICATOR */}
         <motion.div 
-          style={{ opacity: accumOpacity, y: accumY }}
-          className="absolute inset-0 flex flex-col items-center justify-center max-w-6xl mx-auto text-left w-full px-6 z-10 pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: sequenceComplete ? 1 : 0 }}
+          transition={{ duration: 1 }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
         >
-          <h2 className="text-5xl md:text-[6vw] font-title font-black uppercase mb-12 md:mb-20 leading-[0.85] tracking-tighter text-brand-primary max-w-4xl">
-            The Accumulation<br/>Of Decisions
+          <span className="font-typewriter text-[10px] uppercase tracking-widest text-brand-primary/50">Explore the concept</span>
+          <div className="w-[1px] h-12 bg-brand-primary/20" />
+        </motion.div>
+      </section>
+
+      {/* CHAMPIONS4GOOD INSPIRED CONTENT LAYOUT */}
+      <section className="py-32 px-4 md:px-12 max-w-screen-2xl mx-auto space-y-24 md:space-y-40">
+        
+        {/* Intro Block */}
+        <motion.div 
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-center max-w-4xl mx-auto space-y-8"
+        >
+          <div className="inline-block px-6 py-2 bg-brand-surface rounded-full border border-brand-outline">
+            <span className="font-typewriter text-[10px] uppercase tracking-widest font-bold">The Core Idea</span>
+          </div>
+          <h2 className="text-4xl md:text-6xl font-title font-black uppercase tracking-tighter leading-none">
+            Your Network Of <br/> Game Changers
           </h2>
-          <div className="grid md:grid-cols-2 gap-12 md:gap-32 w-full">
-            <p className="font-editorial text-2xl md:text-3xl lg:text-4xl leading-relaxed text-brand-primary/70">
-              History has never been shaped by a single grand gesture. It's been shaped by the accumulation of a million ordinary decisions made by ordinary people. 
+          <p className="font-editorial text-xl md:text-3xl text-brand-primary/60 italic leading-relaxed">
+            History has never been shaped by a single grand gesture. It's been shaped by the accumulation of a million ordinary decisions made by ordinary people. 
+          </p>
+        </motion.div>
+
+        {/* Heavy Offset Cards Grid */}
+        <div className="grid md:grid-cols-2 gap-8 md:gap-16">
+          
+          {/* Card 1 */}
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="bg-brand-surface rounded-3xl p-10 md:p-16 border border-brand-outline relative overflow-hidden group hover:bg-brand-primary hover:text-brand-background transition-colors duration-500"
+          >
+            <div className="flex justify-between items-start mb-24">
+              <span className="text-6xl md:text-8xl font-title font-black opacity-20">01</span>
+              <div className="px-4 py-1 bg-brand-secondary/20 text-brand-secondary rounded-full font-typewriter text-[10px] font-bold uppercase group-hover:bg-brand-background/20 group-hover:text-brand-background transition-colors">
+                Legacy
+              </div>
+            </div>
+            <h3 className="text-3xl md:text-5xl font-title font-bold uppercase mb-6 tracking-tighter leading-none">
+              To Inherit & Reimagine
+            </h3>
+            <p className="font-editorial text-lg md:text-xl opacity-70 group-hover:opacity-100 transition-opacity">
+              We'll explore what it means to live responsibly on a warming planet. To inherit systems you didn't design and decide whether to maintain them or reimagine them entirely.
             </p>
-            <p className="font-editorial text-2xl md:text-3xl lg:text-4xl leading-relaxed text-brand-primary/70">
-              We'll explore what it means to inherit systems you didn't design—a warming planet, an AI revolution—and decide whether to maintain or reimagine them.
+          </motion.div>
+
+          {/* Card 2 (Offset lower) */}
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+            className="bg-brand-secondary text-brand-background rounded-3xl p-10 md:p-16 relative overflow-hidden md:mt-24 group hover:bg-brand-primary transition-colors duration-500"
+          >
+            <div className="flex justify-between items-start mb-24">
+              <span className="text-6xl md:text-8xl font-title font-black opacity-20">02</span>
+              <div className="px-4 py-1 bg-brand-background/20 rounded-full font-typewriter text-[10px] font-bold uppercase">
+                Action
+              </div>
+            </div>
+            <h3 className="text-3xl md:text-5xl font-title font-bold uppercase mb-6 tracking-tighter leading-none">
+              Capitalism's Clock
+            </h3>
+            <p className="font-editorial text-lg md:text-xl opacity-90">
+              Examining how modern economic systems have commodified our hours. We challenge the relentless demand for efficiency and question whether the clock serves us, or if we serve the clock.
             </p>
+          </motion.div>
+
+        </div>
+
+        {/* Benefits Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="border-t border-b border-brand-outline py-24 flex flex-col md:flex-row gap-16 justify-between items-start"
+        >
+          <h2 className="text-5xl md:text-7xl font-title font-black uppercase tracking-tighter leading-[0.85] shrink-0">
+            Your <br/> <span className="text-brand-secondary">Benefits</span>
+          </h2>
+          <div className="space-y-12 max-w-2xl">
+            <div className="flex gap-6 items-start">
+              <span className="font-typewriter font-bold text-brand-secondary mt-1">01</span>
+              <h4 className="font-sans font-bold text-xl md:text-3xl uppercase tracking-tighter">Curated Network of Executives and Athletes</h4>
+            </div>
+            <div className="w-full h-px bg-brand-outline" />
+            <div className="flex gap-6 items-start">
+              <span className="font-typewriter font-bold text-brand-secondary mt-1">02</span>
+              <h4 className="font-sans font-bold text-xl md:text-3xl uppercase tracking-tighter">Tickets to unique sport-EVENTS</h4>
+            </div>
+            <div className="w-full h-px bg-brand-outline" />
+            <div className="flex gap-6 items-start">
+              <span className="font-typewriter font-bold text-brand-secondary mt-1">03</span>
+              <h4 className="font-sans font-bold text-xl md:text-3xl uppercase tracking-tighter">Exclusive benefits and discounts</h4>
+            </div>
           </div>
         </motion.div>
 
-        {/* Phase 4: CTA */}
+        {/* Massive CTA */}
         <motion.div 
-          style={{ opacity: ctaOpacity, y: ctaY }}
-          className="absolute inset-0 flex flex-col items-center justify-center text-center z-20 pointer-events-auto bg-brand-background/80 backdrop-blur-sm"
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, margin: "-10%" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="bg-brand-primary text-brand-background rounded-3xl p-12 md:p-24 text-center"
         >
-          <p className="font-typewriter text-[10px] md:text-xs uppercase tracking-[0.4em] text-brand-secondary mb-8">
-            The clock is ticking.
-          </p>
-          <h2 className="text-[10vw] md:text-[8vw] font-title font-black uppercase tracking-tighter leading-[0.85] mb-16 text-brand-primary">
-            What will you do <br/> with the time <br/> 
-            <span className="text-brand-secondary italic font-serif lowercase block mt-4 drop-shadow-lg">that's left?</span>
+          <h2 className="text-5xl md:text-8xl font-title font-black uppercase tracking-tighter leading-none mb-12">
+            Ready To Join?
           </h2>
+          <p className="font-editorial text-2xl md:text-4xl italic opacity-70 mb-16 max-w-3xl mx-auto">
+            Secure your ticket and explore a curated network of visionaries acting on borrowed time.
+          </p>
           <Link 
-            to="/tickets" 
-            className="inline-flex items-center justify-center px-12 py-6 bg-brand-primary text-brand-background font-title text-xl md:text-2xl font-black uppercase tracking-widest hover:bg-brand-secondary hover:text-white transition-all duration-500 rounded-full shadow-2xl"
+            to="/tickets"
+            className="inline-flex items-center gap-4 bg-brand-secondary text-brand-background px-12 py-6 rounded-full font-title font-bold text-xl md:text-3xl uppercase tracking-widest hover:bg-white transition-all hover:scale-105 active:scale-95"
           >
-            Secure Your Seat
+            Get Tickets <ArrowRight size={32} />
           </Link>
         </motion.div>
 
-      </div>
+      </section>
     </div>
   );
 }
