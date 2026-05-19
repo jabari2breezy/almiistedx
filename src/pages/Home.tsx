@@ -9,6 +9,7 @@ import FloatingBackground from '../components/FloatingBackground';
 import { MechanicalClock, FluidBlob, KineticTypography } from '../components/ModernAnimation';
 import FluidBackground from '../components/FluidBackground';
 import Countdown from '../components/Countdown';
+import Preloader from '../components/Preloader';
 
 const transition = { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] };
 
@@ -266,6 +267,8 @@ export default function Home() {
       className="relative pt-4 bg-[#08080a] text-[#EBEBEB]"
       ref={containerRef}
     >
+      <Preloader onComplete={() => console.log('Preloader finished')} />
+
       {/* High-End Scroll Progress Bar */}
       <motion.div 
         className="fixed top-0 left-0 right-0 h-[2px] bg-brand-secondary z-[100] origin-left"
@@ -297,7 +300,7 @@ export default function Home() {
             variants={titleVariants}
             className="max-w-7xl mb-12"
           >
-            <h1 className="text-[18vw] md:text-[14vw] font-title font-black leading-[0.75] tracking-tighter uppercase text-white mix-blend-difference">
+            <h1 className="hero-text text-[18vw] md:text-[14vw] font-title font-black leading-[0.75] tracking-tighter uppercase text-white mix-blend-difference">
               TEDX ALMUNTAZIR <br />
               <span className="text-brand-secondary">SCHOOLS YOUTH</span> <br />
               <span className="opacity-30">2026</span>
@@ -308,16 +311,16 @@ export default function Home() {
             variants={itemVariants} 
             className="max-w-3xl mb-16"
           >
-             <p className="font-editorial text-4xl md:text-6xl text-white/50 italic leading-[1.1]">
+             <p className="hero-text font-editorial text-4xl md:text-6xl text-white/50 italic leading-[1.1]">
                We're living on <span className="text-white font-medium">BORROWED TIME.</span>
              </p>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="mb-20">
+          <motion.div variants={itemVariants} className="hero-text mb-20">
             <Countdown />
           </motion.div>
 
-          <motion.div variants={itemVariants} className="flex flex-col md:flex-row gap-8 items-center">
+          <motion.div variants={itemVariants} className="hero-text flex flex-col md:flex-row gap-8 items-center">
             <Link to="/theme" className="group flex items-center gap-4 font-typewriter text-[11px] uppercase tracking-[0.4em] text-white hover:text-brand-secondary transition-colors">
               Explore the Theme
               <div className="w-12 h-[1px] bg-white/20 group-hover:bg-brand-secondary group-hover:w-16 transition-all" />
