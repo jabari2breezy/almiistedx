@@ -113,7 +113,7 @@ export default function FloatingCursor() {
               exit={{ scale: 0, opacity: 0 }}
               className="absolute font-typewriter text-[8px] uppercase tracking-widest text-brand-secondary font-bold"
             >
-              VIEW
+              EXPLORE
             </motion.span>
           )}
           {hoverType === 'card' && (
@@ -123,7 +123,7 @@ export default function FloatingCursor() {
               exit={{ opacity: 0, scale: 0.5 }}
               className="text-[4px] font-black uppercase tracking-widest text-white"
             >
-              View
+              DRAG
             </motion.span>
           )}
         </AnimatePresence>

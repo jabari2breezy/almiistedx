@@ -2,7 +2,7 @@ import { motion } from 'motion/react';
 import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
-const transition = { duration: 1.2, ease: [0.76, 0, 0.24, 1] };
+const transition = { duration: 1.2, ease: [0.76, 0, 0.24, 1] as const };
 
 export default function CurtainTransition() {
   const location = useLocation();

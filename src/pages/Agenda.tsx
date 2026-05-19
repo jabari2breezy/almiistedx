@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 
-const transition = { duration: 1, ease: [0.76, 0, 0.24, 1] };
+const transition = { duration: 1, ease: [0.76, 0, 0.24, 1] as const };
 
 export default function Agenda() {
   const agendaItems = [
@@ -58,7 +58,7 @@ export default function Agenda() {
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-10%" }}
-                    transition={{ delay: i * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ delay: i * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
                     className="relative group"
                   >
                     <div className="space-y-6">

@@ -8,7 +8,7 @@ import InteractiveBackground from '../components/InteractiveBackground';
 import FloatingBackground from '../components/FloatingBackground';
 import { MechanicalClock, ModernSandglass, DigitalNetwork } from '../components/ModernAnimation';
 
-const transition = { duration: 1.2, ease: [0.76, 0, 0.24, 1] };
+const transition = { duration: 1.2, ease: [0.76, 0, 0.24, 1] as const };
 
 const containerVariants = {
   hidden: { opacity: 0 },

@@ -102,7 +102,7 @@ export default function Navbar() {
             initial={{ y: '-100%' }}
             animate={{ y: 0 }}
             exit={{ y: '-100%' }}
-            transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
+            transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] as const }}
             className="fixed inset-0 bg-brand-primary z-[150] flex flex-col pointer-events-auto border-b border-white/5 shadow-2xl text-white overflow-y-auto custom-scrollbar"
             data-lenis-prevent
           >
@@ -135,7 +135,7 @@ export default function Navbar() {
                     <motion.span 
                       initial={{ y: 100, rotate: 5 }}
                       animate={{ y: 0, rotate: 0 }}
-                      transition={{ delay: 0.3 + (i * 0.08), duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                      transition={{ delay: 0.3 + (i * 0.08), duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
                       className={`text-5xl md:text-8xl font-kinetic font-black tracking-tighter uppercase leading-[0.8] transition-all duration-700 ${
                         location.pathname === item.href ? 'text-brand-secondary' : 'text-white group-hover:italic group-hover:translate-x-8'
                       }`}

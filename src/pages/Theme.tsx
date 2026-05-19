@@ -2,7 +2,7 @@ import { motion } from 'motion/react';
 import { Quote, ShieldAlert, Sparkles, Zap, Clock as ClockIcon } from 'lucide-react';
 import { MechanicalClock } from '../components/ModernAnimation';
 
-const transition = { duration: 1.2, ease: [0.76, 0, 0.24, 1] };
+const transition = { duration: 1.2, ease: [0.76, 0, 0.24, 1] as const };
 
 export default function Theme() {
   return (

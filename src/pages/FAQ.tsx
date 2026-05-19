@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Plus, Ticket, MapPin, Lightbulb } from 'lucide-react';
 
-const transition = { duration: 1, ease: [0.76, 0, 0.24, 1] };
+const transition = { duration: 1, ease: [0.76, 0, 0.24, 1] as const };
 
 const FAQ_DATA = [
   {

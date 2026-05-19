@@ -2,7 +2,7 @@ import { useState, FormEvent } from 'react';
 import { motion } from 'motion/react';
 import { HelpCircle, Mail, ArrowUpRight, Plus } from 'lucide-react';
 
-const transition = { duration: 1, ease: [0.76, 0, 0.24, 1] };
+const transition = { duration: 1, ease: [0.76, 0, 0.24, 1] as const };
 
 export default function About() {
   const [formState, setFormState] = useState({ name: '', email: '', message: '' });

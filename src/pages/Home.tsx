@@ -11,7 +11,7 @@ import FluidBackground from '../components/FluidBackground';
 import Countdown from '../components/Countdown';
 import Preloader from '../components/Preloader';
 
-const transition = { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] };
+const transition = { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] as const };
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -29,7 +29,7 @@ const itemVariants = {
   visible: { 
     opacity: 1, 
     y: 0,
-    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] }
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }
   }
 };
 
@@ -40,7 +40,7 @@ const titleVariants = {
     y: 0,
     transition: { 
       duration: 0.7, 
-      ease: [0.16, 1, 0.3, 1]
+      ease: [0.16, 1, 0.3, 1] as const
     }
   }
 };

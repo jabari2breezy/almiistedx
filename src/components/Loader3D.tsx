@@ -77,7 +77,7 @@ export default function Loader3D() {
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.5, ease: [0.76, 0, 0.24, 1] }}
+          transition={{ duration: 1.5, ease: [0.76, 0, 0.24, 1] as const }}
           className="fixed inset-0 z-[2000] bg-brand-primary flex flex-col items-center justify-center overflow-hidden"
         >
           <div className="absolute inset-0 z-0">
