@@ -12,6 +12,7 @@ import About from './pages/About';
 import Agenda from './pages/Agenda';
 import FAQ from './pages/FAQ';
 import Tickets from './pages/Tickets';
+import Checkout from './pages/Checkout';
 import Footer from './components/Footer';
 import ScrollToTopButton from './components/ScrollToTopButton';
 import { useEffect } from 'react';
@@ -45,6 +46,7 @@ function AnimatedRoutes() {
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/tickets" element={<Tickets />} />
+          <Route path="/checkout" element={<Checkout />} />
         </Routes>
       </motion.div>
     </AnimatePresence>
