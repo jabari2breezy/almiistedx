@@ -6,25 +6,40 @@ export default function Tickets() {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
   const [isProcessing, setIsProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [ticketNumber, setTicketNumber] = useState<number | null>(null);
+  const [ticketNumber, setTicketNumber] = useState<string | null>(null);
+  const [ticketImage, setTicketImage] = useState<string | null>(null);
 
   const TICKET_PRICE = 30000; // TZS
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
     
-    // Mocking an API call to a payment aggregator (Selcom, Airtel Money, etc.)
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/buy-ticket', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSuccess(true);
+        setTicketNumber(data.ticketNumber);
+        setTicketImage(data.ticketImageBase64);
+        setTicketsLeft(prev => Math.max(0, prev - 1));
+      } else {
+        alert("Payment failed: " + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Payment processing error");
+    } finally {
       setIsProcessing(false);
-      setSuccess(true);
-      const newTicketNo = 101 - ticketsLeft; // Sequential number
-      setTicketNumber(newTicketNo);
-      setTicketsLeft(prev => prev - 1);
-      
-      // In a real scenario, this is where we would trigger the API to generate the ticket image
-      // and send it via Resend to `formData.email`.
-    }, 2500);
+    }
   };
 
   const containerVariants = {
@@ -71,10 +86,17 @@ export default function Tickets() {
               <p className="text-brand-primary/70 max-w-md mx-auto">
                 Thank you, {formData.name}. Your ticket has been secured and sent to {formData.email}.
               </p>
-              <div className="bg-brand-background py-6 px-8 inline-block border border-brand-outline rounded mt-4">
-                <span className="block font-typewriter text-[10px] uppercase tracking-widest text-brand-primary/50 mb-2">Your Ticket Number</span>
-                <span className="text-5xl font-black font-title text-brand-secondary">#{ticketNumber?.toString().padStart(3, '0')}</span>
-              </div>
+              
+              {ticketImage ? (
+                <div className="mt-8 rounded-sm overflow-hidden border border-brand-outline shadow-2xl relative max-w-2xl mx-auto">
+                  <img src={ticketImage} alt="Your TEDx Ticket" className="w-full h-auto block" />
+                </div>
+              ) : (
+                <div className="bg-brand-background py-6 px-8 inline-block border border-brand-outline rounded mt-4">
+                  <span className="block font-typewriter text-[10px] uppercase tracking-widest text-brand-primary/50 mb-2">Your Ticket Number</span>
+                  <span className="text-5xl font-black font-title text-brand-secondary">#{ticketNumber}</span>
+                </div>
+              )}
             </motion.div>
           ) : (
             <div className="grid md:grid-cols-2 gap-12">

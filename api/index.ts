@@ -1,6 +1,8 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs/promises';
+import { existsSync } from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -171,8 +173,26 @@ app.post('/api/register', async (req, res) => {
         } else {
           console.log('Admin notification sent successfully:', data?.id);
         }
+
+        // Send Welcome to User
+        await resend.emails.send({
+          from: 'TEDx Youth <onboarding@resend.dev>',
+          to: [email],
+          subject: `Welcome to the TEDx Youth Community`,
+          html: `
+            <div style="font-family: sans-serif; line-height: 1.5; color: #000839; max-width: 600px; margin: 0 auto; padding: 32px; border: 1px solid #e2e2e2;">
+              <h1 style="border-bottom: 2px solid #006d38; padding-bottom: 10px; font-weight: 800; font-size: 32px;">Welcome, ${name.split(' ')[0]}.</h1>
+              <p>Thank you for expressing interest in <strong>TEDxAlMuntazirSchoolsYouth</strong>.</p>
+              <p>We are building a community of visionaries, and we are excited to have you with us. Our team will review your message and reach out to you shortly regarding next steps.</p>
+              <p style="margin-top: 32px; font-style: italic;">The clock's ticking. The stage is yours.</p>
+              <p>- TEDxAlMuntazirSchoolsYouth Organizing Team</p>
+            </div>
+          `
+        });
+        console.log('User welcome email sent successfully');
+        
       } catch (err: any) {
-        console.error('Admin email failed:', err.message || err);
+        console.error('Admin/User email failed:', err.message || err);
       }
     } catch (err: any) {
       console.error('Resend Setup Error:', err.message || err);
@@ -223,6 +243,99 @@ app.post('/api/register', async (req, res) => {
   res.json({ 
     success: true, 
     message: 'Invitation request received. We will be in touch.' 
+  });
+});
+
+app.post('/api/buy-ticket', async (req, res) => {
+  const { name, email, phone } = req.body;
+  const resendKey = process.env.RESEND_API_KEY;
+
+  // Simple sequential counter
+  const counterFile = path.join(process.cwd(), 'data', 'ticket_counter.json');
+  let currentCount = 1;
+  try {
+    if (existsSync(counterFile)) {
+      const data = await fs.readFile(counterFile, 'utf8');
+      currentCount = JSON.parse(data).count + 1;
+    } else {
+      await fs.mkdir(path.join(process.cwd(), 'data'), { recursive: true });
+    }
+    await fs.writeFile(counterFile, JSON.stringify({ count: currentCount }));
+  } catch (e) {
+    console.error("Counter error", e);
+  }
+
+  const ticketNumber = currentCount.toString().padStart(4, '0');
+
+  let ticketBuffer;
+
+  try {
+    const jimp = (await import('jimp')).default;
+    const templatePath = path.join(process.cwd(), 'public', 'ticket-template.jpg');
+    
+    let image;
+    if (existsSync(templatePath)) {
+      image = await jimp.read(templatePath);
+      // We assume the user provided a clean template without the number.
+      // We will place the number at the bottom right.
+      const font = await jimp.loadFont(jimp.FONT_SANS_64_WHITE);
+      // Hardcoded coordinates that usually work for standard HD layouts
+      const imageWidth = image.bitmap.width;
+      const imageHeight = image.bitmap.height;
+      image.print(font, imageWidth - 400, imageHeight - 100, `NO. ${ticketNumber}`);
+    } else {
+      // Fallback: create a blank black ticket
+      image = new jimp(1200, 400, 0x0c1012FF);
+      const font = await jimp.loadFont(jimp.FONT_SANS_64_WHITE);
+      const greenFont = await jimp.loadFont(jimp.FONT_SANS_32_WHITE); // Fallback color
+      image.print(font, 50, 50, "TEDxAlMuntazirSchoolsYouth");
+      image.print(font, 50, 200, `TICKET NO. ${ticketNumber}`);
+      image.print(greenFont, 50, 300, `ADMIT: ${name}`);
+    }
+
+    ticketBuffer = await image.getBufferAsync(jimp.MIME_JPEG);
+  } catch (err: any) {
+    console.error('Ticket generation error:', err);
+    return res.status(500).json({ error: 'Failed to generate ticket' });
+  }
+
+  if (resendKey) {
+    try {
+      const { Resend } = await import('resend');
+      const resend = new Resend(resendKey);
+      
+      await resend.emails.send({
+        from: 'TEDx Youth <onboarding@resend.dev>',
+        to: [email],
+        subject: `Your Ticket to TEDxAlMuntazirSchoolsYouth 2026`,
+        html: `
+          <div style="font-family: sans-serif; line-height: 1.5; color: #000839; max-width: 600px; margin: 0 auto;">
+            <h1 style="border-bottom: 2px solid #006d38; padding-bottom: 10px;">Thank you, ${name}!</h1>
+            <p>Your purchase was successful. Attached is your official digital ticket for "Borrowed Time".</p>
+            <p><strong>Ticket Number:</strong> ${ticketNumber}</p>
+            <p>Please present the attached image along with your valid Student ID at the entrance.</p>
+            <br/>
+            <p>See you on June 14th, 2026.</p>
+          </div>
+        `,
+        attachments: [
+          {
+            filename: `ticket-${ticketNumber}.jpg`,
+            content: ticketBuffer
+          }
+        ]
+      });
+      
+      console.log('Ticket email sent successfully');
+    } catch (err: any) {
+      console.error('Ticket email failed:', err.message || err);
+    }
+  }
+
+  res.json({ 
+    success: true, 
+    ticketNumber,
+    ticketImageBase64: `data:image/jpeg;base64,${ticketBuffer.toString('base64')}`
   });
 });
 
