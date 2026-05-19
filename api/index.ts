@@ -284,19 +284,19 @@ app.post('/api/buy-ticket', async (req, res) => {
       const imageHeight = image.bitmap.height;
       image.print(font, imageWidth - 400, imageHeight - 100, `NO. ${ticketNumber}`);
     } else {
-      // Fallback: create a blank black ticket
-      image = new jimp(1200, 400, 0x0c1012FF);
+      // Fallback: create a blank black ticket safely
+      const JimpConstructor = (jimp as any).Jimp || jimp;
+      image = new JimpConstructor(1200, 400, 0x0c1012FF);
       const font = await jimp.loadFont(jimp.FONT_SANS_64_WHITE);
-      const greenFont = await jimp.loadFont(jimp.FONT_SANS_32_WHITE); // Fallback color
       image.print(font, 50, 50, "TEDxAlMuntazirSchoolsYouth");
       image.print(font, 50, 200, `TICKET NO. ${ticketNumber}`);
-      image.print(greenFont, 50, 300, `ADMIT: ${name}`);
+      image.print(font, 50, 300, `ADMIT: ${name}`);
     }
 
     ticketBuffer = await image.getBufferAsync(jimp.MIME_JPEG);
   } catch (err: any) {
     console.error('Ticket generation error:', err);
-    return res.status(500).json({ error: 'Failed to generate ticket' });
+    return res.status(500).json({ error: err.message || 'Failed to generate ticket' });
   }
 
   if (resendKey) {

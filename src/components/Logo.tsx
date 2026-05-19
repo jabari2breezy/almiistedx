@@ -24,13 +24,7 @@ export default function Logo({ className = '', variant = 'tedx' }: LogoProps) {
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      <div className="w-10 h-10 bg-brand-primary rounded-full flex items-center justify-center text-white font-title text-xl font-bold">
-        AM
-      </div>
-      <div className="flex flex-col">
-        <span className="font-sans font-bold text-[10px] leading-tight text-brand-primary uppercase">AlMuntazir Islamic</span>
-        <span className="font-sans text-[8px] leading-tight text-brand-primary/60 uppercase">International Schools</span>
-      </div>
+      <img src="/school-logo.png" alt="AlMuntazir Islamic International School" className="h-10 md:h-12 w-auto object-contain" />
     </div>
   );
 }
