@@ -144,19 +144,26 @@ app.get('/api/schedule', (req, res) => {
 
 app.post('/api/register', async (req, res) => {
   const { email, name, message } = req.body;
-  const resendKey = process.env.RESEND_API_KEY;
+  const gmailUser = process.env.GMAIL_USER;
+  const gmailPass = process.env.GMAIL_APP_PASSWORD;
   
-  if (resendKey) {
+  if (gmailUser && gmailPass) {
     try {
-      const { Resend } = await import('resend');
-      const resend = new Resend(resendKey);
+      const nodemailer = await import('nodemailer');
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: gmailUser,
+          pass: gmailPass,
+        },
+      });
       
       // Send notification to Admin
-      console.log('Attempting to send admin email via Resend...');
+      console.log('Attempting to send admin email via Nodemailer...');
       try {
-        const { data, error } = await resend.emails.send({
-          from: 'TEDx Youth <onboarding@resend.dev>',
-          to: ['jabari2breezy@gmail.com'],
+        await transporter.sendMail({
+          from: `"TEDx Youth" <${gmailUser}>`,
+          to: 'jabari2breezy@gmail.com',
           subject: `New Get Involved Request: ${name}`,
           html: `
             <div style="font-family: sans-serif; line-height: 1.5; color: #002B5B;">
@@ -167,17 +174,12 @@ app.post('/api/register', async (req, res) => {
             </div>
           `
         });
-        
-        if (error) {
-          console.warn('Resend Admin Notification issue:', error.message);
-        } else {
-          console.log('Admin notification sent successfully:', data?.id);
-        }
+        console.log('Admin notification sent successfully.');
 
         // Send Welcome to User
-        await resend.emails.send({
-          from: 'TEDx Youth <onboarding@resend.dev>',
-          to: [email],
+        await transporter.sendMail({
+          from: `"TEDx Youth" <${gmailUser}>`,
+          to: email,
           subject: `Welcome to the TEDx Youth Community`,
           html: `
             <div style="font-family: sans-serif; line-height: 1.5; color: #000839; max-width: 600px; margin: 0 auto; padding: 32px; border: 1px solid #e2e2e2;">
@@ -195,10 +197,10 @@ app.post('/api/register', async (req, res) => {
         console.error('Admin/User email failed:', err.message || err);
       }
     } catch (err: any) {
-      console.error('Resend Setup Error:', err.message || err);
+      console.error('Nodemailer Setup Error:', err.message || err);
     }
   } else {
-    console.warn('RESEND_API_KEY is missing. Skipping admin notification.');
+    console.warn('GMAIL_USER or GMAIL_APP_PASSWORD is missing. Skipping emails.');
   }
 
   // --- Mailchimp Integration ---
@@ -248,7 +250,8 @@ app.post('/api/register', async (req, res) => {
 
 app.post('/api/buy-ticket', async (req, res) => {
   const { name, email, phone } = req.body;
-  const resendKey = process.env.RESEND_API_KEY;
+  const gmailUser = process.env.GMAIL_USER;
+  const gmailPass = process.env.GMAIL_APP_PASSWORD;
 
   // Simple sequential counter
   const counterFile = path.join(process.cwd(), 'data', 'ticket_counter.json');
@@ -301,14 +304,20 @@ app.post('/api/buy-ticket', async (req, res) => {
     return res.status(500).json({ error: err.message || 'Failed to generate ticket' });
   }
 
-  if (resendKey) {
+  if (gmailUser && gmailPass) {
     try {
-      const { Resend } = await import('resend');
-      const resend = new Resend(resendKey);
+      const nodemailer = await import('nodemailer');
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: gmailUser,
+          pass: gmailPass,
+        },
+      });
       
-      await resend.emails.send({
-        from: 'TEDx Youth <onboarding@resend.dev>',
-        to: [email],
+      await transporter.sendMail({
+        from: `"TEDx Youth" <${gmailUser}>`,
+        to: email,
         subject: `Your Ticket to TEDxAlMuntazirSchoolsYouth 2026`,
         html: `
           <div style="font-family: sans-serif; line-height: 1.5; color: #000839; max-width: 600px; margin: 0 auto;">
